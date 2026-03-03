@@ -14,28 +14,130 @@
 <script src="https://js.paystack.co/v1/inline.js"></script>
 
 <style>
-body {margin:0;font-family:Arial,sans-serif;background:linear-gradient(to bottom,#0b3d91,#1e40af,#0f172a);color:white;text-align:center;}
-.container{padding:20px;}
-h1{margin-top:20px;}
-.card-container{display:flex;flex-wrap:wrap;justify-content:center;gap:15px;margin-top:30px;}
-.card{background:rgba(255,255,255,0.1);border-radius:15px;padding:15px;width:220px;cursor:pointer;transition: transform 0.3s;}
-.card:hover{transform:scale(1.05);}
-input,select,button{width:90%;padding:10px;margin-top:10px;border:none;border-radius:8px;font-size:16px;}
-button{background:#10b981;color:white;cursor:pointer;}
-button:hover{background:#059669;}
-.order-list{margin-top:20px;text-align:left;max-height:250px;overflow-y:auto;}
-.order-item{background:rgba(255,255,255,0.1);padding:10px;border-radius:10px;margin-bottom:10px;}
+body {
+  margin:0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(to bottom, #0b3d91, #1e40af, #0f172a);
+  color:white;
+  text-align:center;
+}
+.container{
+  padding:20px;
+}
+h1{
+  margin-top:20px;
+  color:#ffeb3b;
+}
+p{
+  color:#f3f4f6;
+  font-size:18px;
+}
+.card-container{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:15px;
+  margin-top:30px;
+}
+.card{
+  border-radius:15px;
+  padding:25px;
+  width:220px;
+  cursor:pointer;
+  color:white;
+  font-weight:bold;
+  font-size:18px;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.card.mtn{
+  background: linear-gradient(135deg,#f9d423,#ff4e50);
+}
+.card.atm{
+  background: linear-gradient(135deg,#ff7e5f,#feb47b);
+}
+.card:hover{
+  transform:scale(1.05);
+  box-shadow:0 5px 20px rgba(0,0,0,0.4);
+}
+input,select,button{
+  width:90%;
+  padding:10px;
+  margin-top:10px;
+  border:none;
+  border-radius:8px;
+  font-size:16px;
+}
+button{
+  background: linear-gradient(135deg,#10b981,#059669);
+  color:white;
+  cursor:pointer;
+  font-weight:bold;
+}
+button:hover{
+  background: linear-gradient(135deg,#059669,#047857);
+}
+.order-list{
+  margin-top:20px;
+  text-align:left;
+  max-height:300px;
+  overflow-y:auto;
+}
+.order-item{
+  padding:12px;
+  border-radius:12px;
+  margin-bottom:12px;
+  background: rgba(255,255,255,0.1);
+  transition: transform 0.2s;
+}
+.order-item:hover{
+  transform: scale(1.02);
+  background: rgba(255,255,255,0.2);
+}
 .hidden{display:none;}
-.auth-btns{display:flex;flex-direction:column;gap:10px;align-items:center;margin-top:10px;}
-#whatsapp-btn{position:fixed;bottom:20px;right:20px;background:#25D366;color:white;padding:15px;border-radius:50%;font-size:20px;text-decoration:none;box-shadow:0 2px 6px rgba(0,0,0,0.3);}
-#dashboard{margin-top:20px;background:rgba(255,255,255,0.05);padding:15px;border-radius:12px;}
+.auth-btns{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  align-items:center;
+  margin-top:10px;
+}
+#whatsapp-btn{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#25D366;
+  color:white;
+  padding:15px;
+  border-radius:50%;
+  font-size:20px;
+  text-decoration:none;
+  box-shadow:0 2px 6px rgba(0,0,0,0.3);
+}
+#dashboard{
+  margin-top:20px;
+  background:rgba(255,255,255,0.05);
+  padding:15px;
+  border-radius:12px;
+}
+.status-processing{
+  color:#facc15;
+  font-weight:bold;
+}
+.status-complete{
+  color:#10b981;
+  font-weight:bold;
+}
+.status-failed{
+  color:#ef4444;
+  font-weight:bold;
+}
 </style>
 </head>
 <body>
 
 <div class="container">
 <h1>Michael Data Hub</h1>
-<p>Secure & Instant Data Bundle Purchase</p>
+<p>Buy MTN & ATM Bundles Easily</p>
 
 <!-- Authentication -->
 <div id="auth-section">
@@ -53,8 +155,8 @@ button:hover{background:#059669;}
 <div id="bundle-section" class="hidden">
 <h2>Select Network</h2>
 <div class="card-container">
-<div class="card" onclick="selectNetwork('MTN')">MTN Network</div>
-<div class="card" onclick="selectNetwork('ATM')">ATM Network</div>
+<div class="card mtn" onclick="selectNetwork('MTN')">MTN Network</div>
+<div class="card atm" onclick="selectNetwork('ATM')">ATM Network</div>
 </div>
 
 <div id="order-form" class="hidden">
@@ -67,11 +169,12 @@ button:hover{background:#059669;}
 
 <!-- Dashboard / Orders -->
 <div id="orders-section" class="hidden">
-<h2>Dashboard / Orders</h2>
+<h2>Dashboard / Recent Orders</h2>
 <div id="dashboard">
 <div id="orders-list" class="order-list"></div>
 </div>
 </div>
+
 </div>
 
 <!-- WhatsApp Contact Button -->
@@ -91,7 +194,7 @@ button:hover{background:#059669;}
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-  // ===== AUTH FUNCTIONS =====
+  // ===== AUTH =====
   function register(){
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value.trim();
@@ -185,17 +288,20 @@ button:hover{background:#059669;}
 
   function loadOrders(){
     const email = auth.currentUser? auth.currentUser.email : null;
+    const phone = document.getElementById('phone').value.trim() || null;
     const ordersList = document.getElementById('orders-list');
     ordersList.innerHTML="";
     let query = db.collection('orders').orderBy('timestamp','desc');
     if(email) query = query.where('email','==',email);
+    else if(phone) query = query.where('phone','==',phone);
     query.onSnapshot(snapshot=>{
       ordersList.innerHTML="";
       snapshot.forEach(doc=>{
         const data = doc.data();
         const div = document.createElement('div');
         div.classList.add('order-item');
-        div.innerHTML=`<strong>${data.bundle}</strong> - ${data.network}<br>Status: ${data.status}<br>Phone: ${data.phone}`;
+        let statusClass = data.status.toLowerCase()=='processing'?'status-processing':data.status.toLowerCase()=='complete'?'status-complete':'status-failed';
+        div.innerHTML=`<strong>${data.bundle}</strong> - ${data.network}<br>Status: <span class="${statusClass}">${data.status}</span><br>Phone: ${data.phone}<br>Date: ${data.timestamp?data.timestamp.toDate().toLocaleString():"-"}`;
         ordersList.appendChild(div);
       });
     });
