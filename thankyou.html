@@ -8,38 +8,71 @@
 body {
   margin:0;
   font-family: Arial, sans-serif;
-  background: linear-gradient(to bottom,#0b3d91,#1e40af,#0f172a);
+  background: linear-gradient(135deg,#0f172a,#1e3a8a,#0f172a);
   color:white;
+  text-align:center;
   display:flex;
   flex-direction:column;
   justify-content:center;
   align-items:center;
   height:100vh;
-  text-align:center;
 }
-h1{font-size:36px;margin-bottom:20px;}
-p{font-size:20px;margin-bottom:30px;}
+h1{
+  font-size:3rem;
+  color:#FFD700; /* MTN Yellow */
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+  animation: glow 2s ease-in-out infinite alternate;
+}
+h2{
+  color:#E60000; /* Vodafone Red */
+  margin-top:10px;
+  animation: glow2 2s ease-in-out infinite alternate;
+}
+p{
+  font-size:20px;
+  margin-top:20px;
+  color:#f3f4f6;
+}
 button{
-  padding:12px 25px;
-  font-size:16px;
+  margin-top:30px;
+  padding:15px 30px;
+  font-size:18px;
   border:none;
-  border-radius:8px;
-  background:#10b981;
-  color:white;
+  border-radius:10px;
   cursor:pointer;
+  background: linear-gradient(135deg,#10b981,#059669);
+  color:white;
+  font-weight:bold;
+  transition: transform 0.3s, box-shadow 0.3s;
 }
-button:hover{background:#059669;}
+button:hover{
+  transform:scale(1.05);
+  box-shadow:0 5px 20px rgba(0,0,0,0.5);
+}
+
+/* Animations for glowing text */
+@keyframes glow {
+  0%{text-shadow:2px 2px 8px rgba(0,0,0,0.3);}
+  50%{text-shadow:2px 2px 20px rgba(255,215,0,0.8);}
+  100%{text-shadow:2px 2px 8px rgba(0,0,0,0.3);}
+}
+@keyframes glow2 {
+  0%{text-shadow:2px 2px 8px rgba(0,0,0,0.3);}
+  50%{text-shadow:2px 2px 20px rgba(230,0,0,0.8);}
+  100%{text-shadow:2px 2px 8px rgba(0,0,0,0.3);}
+}
 </style>
 </head>
 <body>
 
 <h1>Thank You!</h1>
-<p>Your payment was successful.<br>Your data bundle will be sent shortly.</p>
+<h2>Your payment was successful 🎉</h2>
+<p>Your bundle will be delivered shortly.</p>
 <button onclick="goHome()">Go Back Home</button>
 
 <script>
 function goHome(){
-  window.location.href = "index.html"; // Redirect to main page
+  window.location.href = "index.html";
 }
 </script>
 
