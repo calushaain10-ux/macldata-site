@@ -68,12 +68,12 @@ button:hover{background:#059669;}
 <script>
   // ========== FIREBASE CONFIG ==========
   const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyDkzHecsD8_BMEKfkrt9d-EZB2Zk3VCwLc",
+    authDomain: "michael-data-hub-b5824.firebaseapp.com",
+    projectId: "michael-data-hub-b5824",
+    storageBucket: "michael-data-hub-b5824.firebasestorage.app",
+    messagingSenderId: "156026253962",
+    appId: "1:156026253962:web:9cf3c5cfe2de9c18373373"
   };
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
@@ -132,7 +132,7 @@ button:hover{background:#059669;}
     let email = auth.currentUser? auth.currentUser.email : "customer@example.com";
 
     const handler = PaystackPop.setup({
-      key: 'YOUR_PAYSTACK_LIVE_KEY',
+      key: 'pk_test_8f766e087751fca611df11cfe5ae5c86ece075ee', // Test Key
       email: email,
       amount: bundlePrice,
       currency: 'GHS',
