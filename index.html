@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Michael Data Hub</title>
 
-<!-- Firebase SDK (CDN) -->
+<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
@@ -23,9 +23,12 @@ h1{margin-top:20px;}
 input,select,button{width:90%;padding:10px;margin-top:10px;border:none;border-radius:8px;font-size:16px;}
 button{background:#10b981;color:white;cursor:pointer;}
 button:hover{background:#059669;}
-.order-list{margin-top:30px;text-align:left;}
+.order-list{margin-top:20px;text-align:left;max-height:250px;overflow-y:auto;}
 .order-item{background:rgba(255,255,255,0.1);padding:10px;border-radius:10px;margin-bottom:10px;}
 .hidden{display:none;}
+.auth-btns{display:flex;flex-direction:column;gap:10px;align-items:center;margin-top:10px;}
+#whatsapp-btn{position:fixed;bottom:20px;right:20px;background:#25D366;color:white;padding:15px;border-radius:50%;font-size:20px;text-decoration:none;box-shadow:0 2px 6px rgba(0,0,0,0.3);}
+#dashboard{margin-top:20px;background:rgba(255,255,255,0.05);padding:15px;border-radius:12px;}
 </style>
 </head>
 <body>
@@ -34,12 +37,16 @@ button:hover{background:#059669;}
 <h1>Michael Data Hub</h1>
 <p>Secure & Instant Data Bundle Purchase</p>
 
-<!-- Login / Register Section -->
+<!-- Authentication -->
 <div id="auth-section">
-<p style="font-size:14px;">Optional login to track your orders</p>
-<input type="email" id="email" placeholder="Enter email (optional)">
-<input type="password" id="password" placeholder="Enter password (optional)">
-<button onclick="login()">Login / Continue</button>
+<input type="email" id="email" placeholder="Enter email">
+<input type="password" id="password" placeholder="Enter password">
+<div class="auth-btns">
+<button onclick="register()">Sign Up</button>
+<button onclick="login()">Login</button>
+<button onclick="guestContinue()">Continue as Guest</button>
+</div>
+<p style="font-size:14px;margin-top:10px;">Optional login to track your orders.</p>
 </div>
 
 <!-- Bundle Selection -->
@@ -58,12 +65,17 @@ button:hover{background:#059669;}
 </div>
 </div>
 
-<!-- User Orders -->
+<!-- Dashboard / Orders -->
 <div id="orders-section" class="hidden">
-<h2>Your Orders</h2>
+<h2>Dashboard / Orders</h2>
+<div id="dashboard">
 <div id="orders-list" class="order-list"></div>
 </div>
 </div>
+</div>
+
+<!-- WhatsApp Contact Button -->
+<a id="whatsapp-btn" href="https://wa.me/0541712051" target="_blank" title="Chat on WhatsApp">💬</a>
 
 <script>
   // ===== FIREBASE CONFIG =====
@@ -79,19 +91,28 @@ button:hover{background:#059669;}
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-  // ===== LOGIN / OPTIONAL GUEST =====
+  // ===== AUTH FUNCTIONS =====
+  function register(){
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
+    if(!email || !password){ alert("Enter email and password to sign up"); return; }
+    auth.createUserWithEmailAndPassword(email,password)
+      .then(()=>{ alert("Sign up successful!"); showBundleSection(); loadOrders(); })
+      .catch(err=>alert("Error: "+err.message));
+  }
+
   function login(){
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value.trim();
-    if(email && password){
-      auth.signInWithEmailAndPassword(email,password)
-        .then(()=>{ showBundleSection(); loadOrders(); })
-        .catch(err=>alert("Login error: "+err.message));
-    } else {
-      // Guest mode
-      showBundleSection();
-      loadOrders();
-    }
+    if(!email || !password){ alert("Enter email and password to login"); return; }
+    auth.signInWithEmailAndPassword(email,password)
+      .then(()=>{ alert("Login successful!"); showBundleSection(); loadOrders(); })
+      .catch(err=>alert("Error: "+err.message));
+  }
+
+  function guestContinue(){
+    showBundleSection();
+    loadOrders();
   }
 
   function showBundleSection(){
@@ -128,7 +149,7 @@ button:hover{background:#059669;}
     let email = auth.currentUser? auth.currentUser.email : "guest@example.com";
 
     const handler = PaystackPop.setup({
-      key: 'pk_test_8f766e087751fca611df11cfe5ae5c86ece075ee', // Test Key
+      key: 'pk_test_8f766e087751fca611df11cfe5ae5c86ece075ee',
       email: email,
       amount: bundlePrice,
       currency: 'GHS',
@@ -144,7 +165,7 @@ button:hover{background:#059669;}
         alert("Payment successful!");
         window.location.href = "thankyou.html";
       },
-      onClose: function(){ alert("Transaction was cancelled."); }
+      onClose: function(){ alert("Transaction cancelled."); }
     });
     handler.openIframe();
   }
