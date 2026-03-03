@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Michael Data Hub</title>
+<title>Michael Data Hub Dashboard</title>
 
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -16,29 +16,15 @@
 <style>
 body {
   margin:0;
-  font-family: Arial, sans-serif;
-  background: linear-gradient(to bottom, #0b3d91, #1e40af, #0f172a);
+  font-family: Arial,sans-serif;
+  background:#0f172a;
   color:white;
   text-align:center;
 }
-.container{
-  padding:20px;
-}
-h1{
-  margin-top:20px;
-  color:#ffeb3b;
-}
-p{
-  color:#f3f4f6;
-  font-size:18px;
-}
-.card-container{
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:center;
-  gap:15px;
-  margin-top:30px;
-}
+.container{padding:20px;}
+h1{margin-top:20px;color:#FFD700;}
+p{color:#f3f4f6;font-size:18px;}
+.card-container{display:flex;flex-wrap:wrap;justify-content:center;gap:15px;margin-top:30px;}
 .card{
   border-radius:15px;
   padding:25px;
@@ -48,98 +34,39 @@ p{
   font-weight:bold;
   font-size:18px;
   transition: transform 0.3s, box-shadow 0.3s;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
 }
-.card.mtn{
-  background: linear-gradient(135deg,#f9d423,#ff4e50);
-}
-.card.atm{
-  background: linear-gradient(135deg,#ff7e5f,#feb47b);
-}
-.card:hover{
-  transform:scale(1.05);
-  box-shadow:0 5px 20px rgba(0,0,0,0.4);
-}
-input,select,button{
-  width:90%;
-  padding:10px;
-  margin-top:10px;
-  border:none;
-  border-radius:8px;
-  font-size:16px;
-}
-button{
-  background: linear-gradient(135deg,#10b981,#059669);
-  color:white;
-  cursor:pointer;
-  font-weight:bold;
-}
-button:hover{
-  background: linear-gradient(135deg,#059669,#047857);
-}
-.order-list{
-  margin-top:20px;
-  text-align:left;
-  max-height:300px;
-  overflow-y:auto;
-}
-.order-item{
-  padding:12px;
-  border-radius:12px;
-  margin-bottom:12px;
-  background: rgba(255,255,255,0.1);
-  transition: transform 0.2s;
-}
-.order-item:hover{
-  transform: scale(1.02);
-  background: rgba(255,255,255,0.2);
-}
+.card.mtn{background:#FFD700;color:#000;}
+.card.vodafone{background:#E60000;}
+.card:hover{transform:scale(1.05);box-shadow:0 5px 20px rgba(0,0,0,0.5);}
+input,select,button{width:90%;padding:10px;margin-top:10px;border:none;border-radius:8px;font-size:16px;}
+button{background: linear-gradient(135deg,#10b981,#059669);color:white;cursor:pointer;font-weight:bold;}
+button:hover{background: linear-gradient(135deg,#059669,#047857);}
+.auth-btns{display:flex;flex-direction:column;gap:10px;align-items:center;margin-top:10px;}
+#dashboard-tabs{display:flex;justify-content:center;gap:10px;margin-top:20px;}
+.tab-btn{padding:10px 20px;border-radius:8px;background:#1e40af;color:white;cursor:pointer;transition:0.3s;}
+.tab-btn.active{background:#3b82f6;}
+.tab-btn:hover{background:#2563eb;}
+#orders-section{margin-top:20px;text-align:left;}
+.order-list{max-height:300px;overflow-y:auto;}
+.order-item{padding:12px;border-radius:12px;margin-bottom:12px;background: rgba(255,255,255,0.1);transition:0.2s;}
+.order-item:hover{transform:scale(1.02);background: rgba(255,255,255,0.2);}
+.status-processing{color:#facc15;font-weight:bold;}
+.status-complete{color:#10b981;font-weight:bold;}
+.status-failed{color:#ef4444;font-weight:bold;}
+.network-mtn{color:#FFD700;font-weight:bold;}
+.network-vodafone{color:#E60000;font-weight:bold;}
+#whatsapp-btn{position:fixed;bottom:20px;right:20px;background:#25D366;color:white;padding:15px;border-radius:50%;font-size:20px;text-decoration:none;box-shadow:0 2px 6px rgba(0,0,0,0.3);}
 .hidden{display:none;}
-.auth-btns{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  align-items:center;
-  margin-top:10px;
-}
-#whatsapp-btn{
-  position:fixed;
-  bottom:20px;
-  right:20px;
-  background:#25D366;
-  color:white;
-  padding:15px;
-  border-radius:50%;
-  font-size:20px;
-  text-decoration:none;
-  box-shadow:0 2px 6px rgba(0,0,0,0.3);
-}
-#dashboard{
-  margin-top:20px;
-  background:rgba(255,255,255,0.05);
-  padding:15px;
-  border-radius:12px;
-}
-.status-processing{
-  color:#facc15;
-  font-weight:bold;
-}
-.status-complete{
-  color:#10b981;
-  font-weight:bold;
-}
-.status-failed{
-  color:#ef4444;
-  font-weight:bold;
-}
 </style>
 </head>
 <body>
 
 <div class="container">
 <h1>Michael Data Hub</h1>
-<p>Buy MTN & ATM Bundles Easily</p>
+<p>Buy MTN & Vodafone Bundles Instantly</p>
 
-<!-- Authentication -->
+<!-- Auth Section -->
 <div id="auth-section">
 <input type="email" id="email" placeholder="Enter email">
 <input type="password" id="password" placeholder="Enter password">
@@ -151,12 +78,12 @@ button:hover{
 <p style="font-size:14px;margin-top:10px;">Optional login to track your orders.</p>
 </div>
 
-<!-- Bundle Selection -->
+<!-- Bundle Section -->
 <div id="bundle-section" class="hidden">
 <h2>Select Network</h2>
 <div class="card-container">
 <div class="card mtn" onclick="selectNetwork('MTN')">MTN Network</div>
-<div class="card atm" onclick="selectNetwork('ATM')">ATM Network</div>
+<div class="card vodafone" onclick="selectNetwork('Vodafone')">Vodafone Network</div>
 </div>
 
 <div id="order-form" class="hidden">
@@ -167,21 +94,36 @@ button:hover{
 </div>
 </div>
 
-<!-- Dashboard / Orders -->
+<!-- Dashboard -->
 <div id="orders-section" class="hidden">
-<h2>Dashboard / Recent Orders</h2>
-<div id="dashboard">
+<h2>Dashboard</h2>
+<div id="dashboard-tabs">
+<button class="tab-btn active" onclick="showTab('all')">All Orders</button>
+<button class="tab-btn" onclick="showTab('balance')">Check Balance</button>
+<button class="tab-btn" onclick="showTab('search')">Search by Phone</button>
+</div>
+
+<div id="all-orders-tab">
 <div id="orders-list" class="order-list"></div>
 </div>
+
+<div id="balance-tab" class="hidden">
+<h3>Total Spent: GHS <span id="total-balance">0.00</span></h3>
+</div>
+
+<div id="search-tab" class="hidden">
+<input type="text" id="search-phone" placeholder="Enter phone number to search">
+<button onclick="searchOrders()">Search</button>
+<div id="search-results" class="order-list"></div>
+</div>
 </div>
 
 </div>
 
-<!-- WhatsApp Contact Button -->
 <a id="whatsapp-btn" href="https://wa.me/0541712051" target="_blank" title="Chat on WhatsApp">💬</a>
 
 <script>
-  // ===== FIREBASE CONFIG =====
+  // FIREBASE CONFIG
   const firebaseConfig = {
     apiKey: "AIzaSyDkzHecsD8_BMEKfkrt9d-EZB2Zk3VCwLc",
     authDomain: "michael-data-hub-b5824.firebaseapp.com",
@@ -194,11 +136,11 @@ button:hover{
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-  // ===== AUTH =====
+  // AUTH FUNCTIONS
   function register(){
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value.trim();
-    if(!email || !password){ alert("Enter email and password to sign up"); return; }
+    if(!email || !password){ alert("Enter email and password"); return; }
     auth.createUserWithEmailAndPassword(email,password)
       .then(()=>{ alert("Sign up successful!"); showBundleSection(); loadOrders(); })
       .catch(err=>alert("Error: "+err.message));
@@ -207,16 +149,13 @@ button:hover{
   function login(){
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value.trim();
-    if(!email || !password){ alert("Enter email and password to login"); return; }
+    if(!email || !password){ alert("Enter email and password"); return; }
     auth.signInWithEmailAndPassword(email,password)
       .then(()=>{ alert("Login successful!"); showBundleSection(); loadOrders(); })
       .catch(err=>alert("Error: "+err.message));
   }
 
-  function guestContinue(){
-    showBundleSection();
-    loadOrders();
-  }
+  function guestContinue(){ showBundleSection(); loadOrders(); }
 
   function showBundleSection(){
     document.getElementById('auth-section').classList.add('hidden');
@@ -224,18 +163,18 @@ button:hover{
     document.getElementById('orders-section').classList.remove('hidden');
   }
 
-  // ===== BUNDLES =====
+  // BUNDLES
   let selectedNetwork = '';
-  const mtnBundles=[], atmBundles=[];
+  const mtnBundles=[], vodafoneBundles=[];
   for(let i=1;i<=100;i++){ mtnBundles.push({size:i+"GB",price:(5.3*i).toFixed(2)}); }
-  for(let i=5;i<=50;i+=5){ atmBundles.push({size:i+"GB",price:(5.3*i).toFixed(2)}); }
+  for(let i=1;i<=100;i++){ vodafoneBundles.push({size:i+"GB",price:(5.3*i).toFixed(2)}); }
 
   function selectNetwork(network){
     selectedNetwork = network;
     document.getElementById('order-form').classList.remove('hidden');
     document.getElementById('network-title').innerText = network + " Bundles";
     const select = document.getElementById('bundle-select'); select.innerHTML="";
-    const bundles = network==="MTN"?mtnBundles:atmBundles;
+    const bundles = network==="MTN"?mtnBundles:vodafoneBundles;
     bundles.forEach(b=>{
       const option = document.createElement('option');
       option.value = b.price;
@@ -244,7 +183,7 @@ button:hover{
     });
   }
 
-  // ===== PAYSTACK =====
+  // PAYSTACK
   function pay(){
     const phone = document.getElementById('phone').value.trim();
     if(!phone){ alert("Enter phone number"); return; }
@@ -264,7 +203,7 @@ button:hover{
         ]
       },
       callback: function(response){
-        saveOrder(email,phone,selectedNetwork,document.getElementById('bundle-select').selectedOptions[0].text,response.reference);
+        saveOrder(email,phone,selectedNetwork,document.getElementById('bundle-select').selectedOptions[0].text,response.reference,bundlePrice/100);
         alert("Payment successful!");
         window.location.href = "thankyou.html";
       },
@@ -273,8 +212,7 @@ button:hover{
     handler.openIframe();
   }
 
-  // ===== FIRESTORE ORDERS =====
-  function saveOrder(email,phone,network,bundle,ref){
+  function saveOrder(email,phone,network,bundle,ref,amount){
     db.collection('orders').add({
       email: email,
       phone: phone,
@@ -282,35 +220,27 @@ button:hover{
       bundle: bundle,
       status: 'Processing',
       reference: ref,
+      amount: amount,
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(()=>{ loadOrders(); });
-  }
-
-  function loadOrders(){
-    const email = auth.currentUser? auth.currentUser.email : null;
-    const phone = document.getElementById('phone').value.trim() || null;
-    const ordersList = document.getElementById('orders-list');
-    ordersList.innerHTML="";
-    let query = db.collection('orders').orderBy('timestamp','desc');
-    if(email) query = query.where('email','==',email);
-    else if(phone) query = query.where('phone','==',phone);
-    query.onSnapshot(snapshot=>{
-      ordersList.innerHTML="";
-      snapshot.forEach(doc=>{
-        const data = doc.data();
-        const div = document.createElement('div');
-        div.classList.add('order-item');
-        let statusClass = data.status.toLowerCase()=='processing'?'status-processing':data.status.toLowerCase()=='complete'?'status-complete':'status-failed';
-        div.innerHTML=`<strong>${data.bundle}</strong> - ${data.network}<br>Status: <span class="${statusClass}">${data.status}</span><br>Phone: ${data.phone}<br>Date: ${data.timestamp?data.timestamp.toDate().toLocaleString():"-"}`;
-        ordersList.appendChild(div);
-      });
     });
   }
 
-  auth.onAuthStateChanged(user=>{
-    if(user) showBundleSection();
-  });
-</script>
+  // DASHBOARD LIVE
+  function loadOrders(){
+    const email = auth.currentUser? auth.currentUser.email : null;
+    const phone = document.getElementById('phone').value.trim() || null;
+    let query = db.collection('orders').orderBy('timestamp','desc');
+    if(email) query = query.where('email','==',email);
+    else if(phone) query = query.where('phone','==',phone);
 
-</body>
-</html>
+    query.onSnapshot(snapshot=>{
+      // Update All Orders
+      const ordersList = document.getElementById('orders-list'); ordersList.innerHTML="";
+      let total = 0;
+      snapshot.forEach(doc=>{
+        const data = doc.data(); total += parseFloat(data.amount||0);
+        const div = document.createElement('div');
+        div.classList.add('order-item');
+        let statusClass = data.status.toLowerCase()=='processing'?'status-processing':data.status.toLowerCase()=='complete'?'status-complete':'status-failed';
+        let networkClass = data.network.toLowerCase()=='mtn'?'network-mtn':'network-vodafone';
+        div.innerHTML=`<strong>${data.bundle}</strong> - <span class="${networkClass}">${data.network}</span><br>Status: <span class="${status
