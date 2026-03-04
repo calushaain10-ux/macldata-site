@@ -5,7 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Michael Data Hub</title>
 <style>
-  body {margin:0;font-family: Arial;background: linear-gradient(to bottom,#0b3d91,#1e40af,#0f172a);color:white;text-align:center;}
+  body {
+    margin:0;
+    font-family: Arial;
+    background: linear-gradient(to bottom,#0b3d91,#1e40af,#0f172a);
+    color:white;
+    text-align:center;
+  }
   .container{padding:20px;}
   h1{margin-top:20px;}
   .card-container{display:flex;flex-wrap:wrap;justify-content:center;gap:15px;margin-top:30px;}
@@ -23,15 +29,32 @@
   #dashboard{margin-top:20px;background:rgba(255,255,255,0.1);padding:15px;border-radius:10px;text-align:left;}
   #dashboard h3{margin:5px;}
   #orders-list li{padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.2);cursor:pointer;}
-  #whatsapp-btn{
-    position: fixed; bottom: 20px; right: 20px;
-    background:#25D366; color:white; border:none; padding:15px; border-radius:50%; font-size:20px; cursor:pointer;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  #delivery-note{color:#FFD700;font-weight:bold;margin-top:10px;}
+  /* Real WhatsApp button */
+  #whatsapp-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #25D366;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 18px;
+    border-radius: 50px;
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 14px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+    transition: 0.3s ease;
   }
-  #delivery-note{
-    color:#FFD700;
-    font-weight:bold;
-    margin-top:10px;
+  #whatsapp-button img {
+    width: 22px;
+    height: 22px;
+  }
+  #whatsapp-button:hover {
+    background: #1ebe5d;
+    transform: scale(1.05);
   }
 </style>
 </head>
@@ -62,10 +85,10 @@
     <h2 id="network-title">Bundles</h2>
     <select id="bundle-select"></select>
     <input type="text" id="phone" placeholder="Enter your phone number">
-    
+
     <!-- Delivery time notice -->
     <p id="delivery-note">Note: Data bundles are delivered within 10 minutes to 4 hours.</p>
-    
+
     <button onclick="pay()">Pay Now</button>
   </div>
 
@@ -76,8 +99,11 @@
   </div>
 </div>
 
-<!-- WhatsApp Contact Button -->
-<button id="whatsapp-btn" onclick="contactWhatsApp()">💬</button>
+<!-- Real WhatsApp Button -->
+<a href="https://wa.me/0541712051" target="_blank" id="whatsapp-button">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
+  <span>Chat on WhatsApp</span>
+</a>
 
 <!-- Firebase Compat SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -245,11 +271,6 @@
           ordersList.appendChild(li);
         });
       });
-  }
-
-  // WhatsApp Contact
-  function contactWhatsApp(){
-    window.open('https://wa.me/0541712051', '_blank');
   }
 </script>
 </body>
