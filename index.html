@@ -3,9 +3,65 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Michael Data Hub Dashboard</title>
+<title>Michael Data Hub</title>
+<style>
+  body {margin:0;font-family: Arial;background: linear-gradient(to bottom,#0b3d91,#1e40af,#0f172a);color:white;text-align:center;}
+  .container{padding:20px;}
+  h1{margin-top:20px;}
+  .card-container{display:flex;flex-wrap:wrap;justify-content:center;gap:15px;margin-top:30px;}
+  .card{
+    border-radius:15px;padding:15px;width:220px;cursor:pointer;transition: transform 0.3s;text-align:center;
+    font-weight:bold;color:white;font-size:18px;
+  }
+  .mtn{background:#FFD700;} /* MTN Yellow */
+  .vodafone{background:#E60000;} /* Vodafone Red */
+  .card:hover{transform:scale(1.05);}
+  select,input,button{
+    width:90%;padding:10px;margin-top:10px;border:none;border-radius:8px;font-size:16px;
+  }
+  button{background:#10b981;color:white;cursor:pointer;}
+  #dashboard{margin-top:20px;background:rgba(255,255,255,0.1);padding:15px;border-radius:10px;}
+  #dashboard h3{margin:5px;}
+</style>
+</head>
+<body>
 
-<!-- Firebase SDK -->
+<div class="container">
+  <h1>Michael Data Hub</h1>
+  <p>Buy MTN & Vodafone Bundles Easily</p>
+
+  <!-- Login / Signup -->
+  <div id="auth-section">
+    <input type="email" id="email" placeholder="Email (optional)">
+    <input type="password" id="password" placeholder="Password (optional)">
+    <button onclick="signup()">Sign Up</button>
+    <button onclick="login()">Login</button>
+    <button onclick="guest()">Continue as Guest</button>
+    <p id="auth-message"></p>
+  </div>
+
+  <!-- Network Selection -->
+  <div class="card-container" id="network-section" style="display:none;">
+    <div class="card mtn" onclick="selectNetwork('MTN')">MTN Network</div>
+    <div class="card vodafone" onclick="selectNetwork('VODAFONE')">Vodafone Network</div>
+  </div>
+
+  <!-- Bundle Selection -->
+  <div id="bundle-section" style="display:none;margin-top:30px;">
+    <h2 id="network-title">Bundles</h2>
+    <select id="bundle-select"></select>
+    <input type="text" id="phone" placeholder="Enter your phone number">
+    <button onclick="pay()">Pay Now</button>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="dashboard" style="display:none;">
+    <h3>Recent Orders</h3>
+    <ul id="orders-list"></ul>
+  </div>
+</div>
+
+<!-- Firebase Compat SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
@@ -13,117 +69,8 @@
 <!-- Paystack -->
 <script src="https://js.paystack.co/v1/inline.js"></script>
 
-<style>
-body {
-  margin:0;
-  font-family: Arial,sans-serif;
-  background:#0f172a;
-  color:white;
-  text-align:center;
-}
-.container{padding:20px;}
-h1{margin-top:20px;color:#FFD700;}
-p{color:#f3f4f6;font-size:18px;}
-.card-container{display:flex;flex-wrap:wrap;justify-content:center;gap:15px;margin-top:30px;}
-.card{
-  border-radius:15px;
-  padding:25px;
-  width:220px;
-  cursor:pointer;
-  color:white;
-  font-weight:bold;
-  font-size:18px;
-  transition: transform 0.3s, box-shadow 0.3s;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
-}
-.card.mtn{background:#FFD700;color:#000;}
-.card.vodafone{background:#E60000;}
-.card:hover{transform:scale(1.05);box-shadow:0 5px 20px rgba(0,0,0,0.5);}
-input,select,button{width:90%;padding:10px;margin-top:10px;border:none;border-radius:8px;font-size:16px;}
-button{background: linear-gradient(135deg,#10b981,#059669);color:white;cursor:pointer;font-weight:bold;}
-button:hover{background: linear-gradient(135deg,#059669,#047857);}
-.auth-btns{display:flex;flex-direction:column;gap:10px;align-items:center;margin-top:10px;}
-#dashboard-tabs{display:flex;justify-content:center;gap:10px;margin-top:20px;}
-.tab-btn{padding:10px 20px;border-radius:8px;background:#1e40af;color:white;cursor:pointer;transition:0.3s;}
-.tab-btn.active{background:#3b82f6;}
-.tab-btn:hover{background:#2563eb;}
-#orders-section{margin-top:20px;text-align:left;}
-.order-list{max-height:300px;overflow-y:auto;}
-.order-item{padding:12px;border-radius:12px;margin-bottom:12px;background: rgba(255,255,255,0.1);transition:0.2s;}
-.order-item:hover{transform:scale(1.02);background: rgba(255,255,255,0.2);}
-.status-processing{color:#facc15;font-weight:bold;}
-.status-complete{color:#10b981;font-weight:bold;}
-.status-failed{color:#ef4444;font-weight:bold;}
-.network-mtn{color:#FFD700;font-weight:bold;}
-.network-vodafone{color:#E60000;font-weight:bold;}
-#whatsapp-btn{position:fixed;bottom:20px;right:20px;background:#25D366;color:white;padding:15px;border-radius:50%;font-size:20px;text-decoration:none;box-shadow:0 2px 6px rgba(0,0,0,0.3);}
-.hidden{display:none;}
-</style>
-</head>
-<body>
-
-<div class="container">
-<h1>Michael Data Hub</h1>
-<p>Buy MTN & Vodafone Bundles Instantly</p>
-
-<!-- Auth Section -->
-<div id="auth-section">
-<input type="email" id="email" placeholder="Enter email">
-<input type="password" id="password" placeholder="Enter password">
-<div class="auth-btns">
-<button onclick="register()">Sign Up</button>
-<button onclick="login()">Login</button>
-<button onclick="guestContinue()">Continue as Guest</button>
-</div>
-<p style="font-size:14px;margin-top:10px;">Optional login to track your orders.</p>
-</div>
-
-<!-- Bundle Section -->
-<div id="bundle-section" class="hidden">
-<h2>Select Network</h2>
-<div class="card-container">
-<div class="card mtn" onclick="selectNetwork('MTN')">MTN Network</div>
-<div class="card vodafone" onclick="selectNetwork('Vodafone')">Vodafone Network</div>
-</div>
-
-<div id="order-form" class="hidden">
-<h2 id="network-title">Bundles</h2>
-<select id="bundle-select"></select>
-<input type="text" id="phone" placeholder="Enter your phone number">
-<button onclick="pay()">Pay Now</button>
-</div>
-</div>
-
-<!-- Dashboard -->
-<div id="orders-section" class="hidden">
-<h2>Dashboard</h2>
-<div id="dashboard-tabs">
-<button class="tab-btn active" onclick="showTab('all')">All Orders</button>
-<button class="tab-btn" onclick="showTab('balance')">Check Balance</button>
-<button class="tab-btn" onclick="showTab('search')">Search by Phone</button>
-</div>
-
-<div id="all-orders-tab">
-<div id="orders-list" class="order-list"></div>
-</div>
-
-<div id="balance-tab" class="hidden">
-<h3>Total Spent: GHS <span id="total-balance">0.00</span></h3>
-</div>
-
-<div id="search-tab" class="hidden">
-<input type="text" id="search-phone" placeholder="Enter phone number to search">
-<button onclick="searchOrders()">Search</button>
-<div id="search-results" class="order-list"></div>
-</div>
-</div>
-
-</div>
-
-<a id="whatsapp-btn" href="https://wa.me/0541712051" target="_blank" title="Chat on WhatsApp">💬</a>
-
 <script>
-  // FIREBASE CONFIG
+  // Firebase config
   const firebaseConfig = {
     apiKey: "AIzaSyDkzHecsD8_BMEKfkrt9d-EZB2Zk3VCwLc",
     authDomain: "michael-data-hub-b5824.firebaseapp.com",
@@ -132,115 +79,141 @@ button:hover{background: linear-gradient(135deg,#059669,#047857);}
     messagingSenderId: "156026253962",
     appId: "1:156026253962:web:9cf3c5cfe2de9c18373373"
   };
+
+  // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-  // AUTH FUNCTIONS
-  function register(){
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value.trim();
-    if(!email || !password){ alert("Enter email and password"); return; }
+  let currentUser = null;
+  let selectedNetwork = '';
+  const mtnBundles = [];
+  const vodafoneBundles = [];
+
+  // MTN 1GB → 100GB, price = 5.3 * GB
+  for(let i=1;i<=100;i++){
+    const price = (5.3*i).toFixed(2);
+    mtnBundles.push({size:i+"GB",price:price});
+  }
+
+  // Vodafone 5GB → 50GB, 5GB step, price = 5.3 * GB
+  for(let i=5;i<=50;i+=5){
+    const price = (5.3*i).toFixed(2);
+    vodafoneBundles.push({size:i+"GB",price:price});
+  }
+
+  function signup(){
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+    if(!email || !password){
+      document.getElementById("auth-message").innerText = "Email and password required for sign-up.";
+      return;
+    }
     auth.createUserWithEmailAndPassword(email,password)
-      .then(()=>{ alert("Sign up successful!"); showBundleSection(); loadOrders(); })
-      .catch(err=>alert("Error: "+err.message));
+      .then(userCredential=>{
+        currentUser = userCredential.user;
+        document.getElementById("auth-section").style.display="none";
+        document.getElementById("network-section").style.display="flex";
+        loadOrders();
+      })
+      .catch(error=>document.getElementById("auth-message").innerText=error.message);
   }
 
   function login(){
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value.trim();
-    if(!email || !password){ alert("Enter email and password"); return; }
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+    if(!email || !password){
+      document.getElementById("auth-message").innerText = "Email and password required for login.";
+      return;
+    }
     auth.signInWithEmailAndPassword(email,password)
-      .then(()=>{ alert("Login successful!"); showBundleSection(); loadOrders(); })
-      .catch(err=>alert("Error: "+err.message));
+      .then(userCredential=>{
+        currentUser = userCredential.user;
+        document.getElementById("auth-section").style.display="none";
+        document.getElementById("network-section").style.display="flex";
+        loadOrders();
+      })
+      .catch(error=>document.getElementById("auth-message").innerText=error.message);
   }
 
-  function guestContinue(){ showBundleSection(); loadOrders(); }
-
-  function showBundleSection(){
-    document.getElementById('auth-section').classList.add('hidden');
-    document.getElementById('bundle-section').classList.remove('hidden');
-    document.getElementById('orders-section').classList.remove('hidden');
+  function guest(){
+    currentUser = {uid:"guest"};
+    document.getElementById("auth-section").style.display="none";
+    document.getElementById("network-section").style.display="flex";
+    loadOrders();
   }
-
-  // BUNDLES
-  let selectedNetwork = '';
-  const mtnBundles=[], vodafoneBundles=[];
-  for(let i=1;i<=100;i++){ mtnBundles.push({size:i+"GB",price:(5.3*i).toFixed(2)}); }
-  for(let i=1;i<=100;i++){ vodafoneBundles.push({size:i+"GB",price:(5.3*i).toFixed(2)}); }
 
   function selectNetwork(network){
     selectedNetwork = network;
-    document.getElementById('order-form').classList.remove('hidden');
-    document.getElementById('network-title').innerText = network + " Bundles";
-    const select = document.getElementById('bundle-select'); select.innerHTML="";
+    document.getElementById("bundle-section").style.display='block';
+    document.getElementById("network-title").innerText = network + " Bundles";
+    const select = document.getElementById("bundle-select");
+    select.innerHTML="";
     const bundles = network==="MTN"?mtnBundles:vodafoneBundles;
     bundles.forEach(b=>{
-      const option = document.createElement('option');
+      const option = document.createElement("option");
       option.value = b.price;
-      option.text = `${b.size} - GHS ${b.price}`;
+      option.text = `${b.size} - GHC ${b.price}`;
       select.appendChild(option);
     });
   }
 
-  // PAYSTACK
   function pay(){
-    const phone = document.getElementById('phone').value.trim();
-    if(!phone){ alert("Enter phone number"); return; }
-    const bundlePrice = document.getElementById('bundle-select').value*100;
-    let email = auth.currentUser? auth.currentUser.email : "guest@example.com";
-
+    const phone = document.getElementById("phone").value.trim() || "0541712051";
+    const amount = document.getElementById("bundle-select").value * 100; // in Kobo
     const handler = PaystackPop.setup({
       key: 'pk_test_8f766e087751fca611df11cfe5ae5c86ece075ee',
-      email: email,
-      amount: bundlePrice,
+      email: currentUser && currentUser.email ? currentUser.email : 'guest@example.com',
+      amount: amount,
       currency: 'GHS',
-      ref: ''+Math.floor(Math.random()*1000000000+1),
-      metadata: {
+      ref: ''+Math.floor((Math.random()*1000000000)+1),
+      metadata:{
         custom_fields:[
-          {display_name:"Phone Number", variable_name:"phone_number", value:phone},
-          {display_name:"Network", variable_name:"network", value:selectedNetwork}
+          {display_name:"Phone Number", variable_name:"phone_number", value:phone}
         ]
       },
-      callback: function(response){
-        saveOrder(email,phone,selectedNetwork,document.getElementById('bundle-select').selectedOptions[0].text,response.reference,bundlePrice/100);
-        alert("Payment successful!");
-        window.location.href = "thankyou.html";
+      callback:function(response){
+        saveOrder(phone,selectedNetwork,document.getElementById("bundle-select").selectedOptions[0].text,response.reference);
+        window.location.href="thankyou.html";
       },
-      onClose: function(){ alert("Transaction cancelled."); }
+      onClose:function(){alert('Transaction was not completed.');}
     });
     handler.openIframe();
   }
 
-  function saveOrder(email,phone,network,bundle,ref,amount){
-    db.collection('orders').add({
-      email: email,
+  function saveOrder(phone,network,bundle,ref){
+    if(currentUser.uid==="guest") return; // optional: skip saving for guests
+    db.collection("orders").add({
+      userId: currentUser.uid,
       phone: phone,
       network: network,
       bundle: bundle,
-      status: 'Processing',
       reference: ref,
-      amount: amount,
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    });
+    }).then(()=>loadOrders());
   }
 
-  // DASHBOARD LIVE
   function loadOrders(){
-    const email = auth.currentUser? auth.currentUser.email : null;
-    const phone = document.getElementById('phone').value.trim() || null;
-    let query = db.collection('orders').orderBy('timestamp','desc');
-    if(email) query = query.where('email','==',email);
-    else if(phone) query = query.where('phone','==',phone);
+    if(currentUser.uid==="guest"){
+      document.getElementById("dashboard").style.display="none";
+      return;
+    }
+    document.getElementById("dashboard").style.display="block";
+    db.collection("orders")
+      .where("userId","==",currentUser.uid)
+      .orderBy("timestamp","desc")
+      .onSnapshot(snapshot=>{
+        const list = document.getElementById("orders-list");
+        list.innerHTML="";
+        snapshot.forEach(doc=>{
+          const data = doc.data();
+          const li = document.createElement("li");
+          li.innerText = `${data.network} - ${data.bundle} | Phone: ${data.phone} | Ref: ${data.reference}`;
+          list.appendChild(li);
+        });
+      });
+  }
 
-    query.onSnapshot(snapshot=>{
-      // Update All Orders
-      const ordersList = document.getElementById('orders-list'); ordersList.innerHTML="";
-      let total = 0;
-      snapshot.forEach(doc=>{
-        const data = doc.data(); total += parseFloat(data.amount||0);
-        const div = document.createElement('div');
-        div.classList.add('order-item');
-        let statusClass = data.status.toLowerCase()=='processing'?'status-processing':data.status.toLowerCase()=='complete'?'status-complete':'status-failed';
-        let networkClass = data.network.toLowerCase()=='mtn'?'network-mtn':'network-vodafone';
-        div.innerHTML=`<strong>${data.bundle}</strong> - <span class="${networkClass}">${data.network}</span><br>Status: <span class="${status
+</script>
+</body>
+</html>
