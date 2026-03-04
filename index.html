@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Michael Data Hub</title>
+<title>Michael Data Hub - Customer</title>
 
+<!-- ================= STYLES ================= -->
 <style>
 body{
   margin:0;
@@ -15,14 +16,16 @@ body{
 }
 
 .container{
-  padding:20px;
-  max-width:1000px;
+  max-width:700px;
   margin:auto;
+  padding:20px;
 }
 
-h1{margin-top:20px;font-size:2.5em;}
+h1,h2,h3{
+  margin:10px 0;
+}
 
-input,select,button{
+input, select, button, textarea{
   width:100%;
   padding:12px;
   margin-top:10px;
@@ -31,44 +34,38 @@ input,select,button{
   font-size:16px;
 }
 
+select, input, textarea{
+  background:black;
+  color:white;
+  font-weight:300;
+}
+
 button{
   background:#10b981;
   color:white;
   font-weight:bold;
   cursor:pointer;
-  transition:0.3s;
-}
-
-button:hover{opacity:0.85;}
-
-#bundle-select,#phone{
-  background:#111;
-  color:white;
-  font-weight:400;
-  font-size:16px;
 }
 
 .card-container{
   display:flex;
-  gap:15px;
   justify-content:center;
+  gap:15px;
   margin-top:20px;
-  flex-wrap:wrap;
 }
 
 .card{
-  padding:20px;
+  padding:15px;
   border-radius:15px;
   width:45%;
   font-weight:bold;
   cursor:pointer;
   transition:0.3s;
   text-align:center;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
 
 .mtn{background:#FFD700;color:black;}
-.vodafone{background:#E60000;color:white;}
+.vodafone{background:#E60000;}
 
 .card:hover{transform:scale(1.05);}
 
@@ -77,10 +74,25 @@ button:hover{opacity:0.85;}
 .policy-box{
   margin-top:30px;
   padding:15px;
-  font-size:14px;
+  font-size:13px;
   background:rgba(255,255,255,0.1);
   border-radius:10px;
   text-align:left;
+}
+
+#orders-list, #chat-box{
+  text-align:left;
+  max-height:250px;
+  overflow-y:auto;
+  background:rgba(0,0,0,0.5);
+  padding:10px;
+  border-radius:10px;
+}
+
+.chat-message{
+  margin-bottom:8px;
+  padding:5px;
+  border-bottom:1px solid #333;
 }
 
 footer{
@@ -96,100 +108,64 @@ footer{
   right:15px;
   background:#25D366;
   color:white;
-  padding:12px 16px;
+  padding:8px 12px;
   border-radius:50px;
-  font-size:14px;
+  font-size:12px;
   text-decoration:none;
   font-weight:bold;
 }
-
-#logout-section button{
-  width:50%;
-  margin:auto;
-  background:#EF4444;
-}
-
-.order-card{
-  background:rgba(255,255,255,0.1);
-  margin:10px 0;
-  padding:15px;
-  border-radius:10px;
-  transition:0.3s;
-}
-
-.order-card.mtn{background:#FFF9C4;color:black;}
-.order-card.vodafone{background:#FFCDD2;color:black;}
-
-.order-card:hover{transform:scale(1.03);}
-
-#dashboard-container{
-  display:none;
-  margin-top:15px;
-  text-align:left;
-}
-
-.extra-btn{
-  background:#3B82F6;
-  margin:5px 0;
-  width:48%;
-  display:inline-block;
-}
 </style>
 </head>
+
 <body>
-
 <div class="container">
-
 <h1>Michael Data Hub</h1>
 <p>Affordable MTN & Vodafone Data Bundles in Ghana</p>
 
-<!-- AUTH -->
+<!-- ================= AUTH ================= -->
 <div id="auth-section">
   <input type="email" id="email" placeholder="Enter Email">
   <input type="password" id="password" placeholder="Enter Password">
   <button onclick="signup()">Sign Up</button>
   <button onclick="login()">Login</button>
   <button onclick="continueGuest()">Continue as Guest</button>
-  <p id="auth-msg" style="color:#FFD700;"></p>
+  <p id="auth-msg"></p>
 </div>
 
-<!-- NETWORK -->
+<!-- ================= NETWORK ================= -->
 <div class="card-container section" id="network-section">
   <div class="card mtn" onclick="selectNetwork('MTN')">MTN Bundles</div>
   <div class="card vodafone" onclick="selectNetwork('VODAFONE')">Vodafone Bundles</div>
 </div>
 
-<!-- LOGOUT -->
-<div id="logout-section" class="section">
-  <button onclick="logout()">Logout</button>
-</div>
-
-<!-- BUNDLES -->
+<!-- ================= BUNDLES ================= -->
 <div class="section" id="bundle-section">
   <h3 id="network-title"></h3>
-
   <select id="bundle-select">
     <option disabled selected>Select bundle option</option>
   </select>
-
   <input type="text" id="phone" placeholder="Enter phone number">
-
   <p style="color:#FFD700;font-size:14px;">
-  Delivery time: 10 minutes to 4 hours after payment.
+    Delivery time: 10 minutes to 4 hours after payment.
   </p>
-
   <button onclick="pay()">Pay Now</button>
 </div>
 
-<!-- DASHBOARD -->
+<!-- ================= ORDERS ================= -->
 <div class="section" id="dashboard">
-  <h3>Your Orders</h3>
-  <button class="extra-btn" onclick="toggleOrders()">Check / Hide Orders</button>
-  <button class="extra-btn" onclick="refreshOrders()">Refresh Orders</button>
-  <div id="dashboard-container"></div>
+<h3>Your Orders</h3>
+<ul id="orders-list"></ul>
 </div>
 
-<!-- POLICY -->
+<!-- ================= AI COMPLAINTS ================= -->
+<div class="section" id="ai-section">
+<h3>AI Chat / Support</h3>
+<div id="chat-box"></div>
+<textarea id="ai-input" placeholder="Type your message here..."></textarea>
+<button onclick="sendMessage()">Send Message</button>
+</div>
+
+<!-- ================= POLICY ================= -->
 <div class="policy-box">
 <h3>Terms & Refund Policy</h3>
 <p>• All payments are processed securely via Paystack.</p>
@@ -207,18 +183,20 @@ footer{
 <p>Location: Accra, Ghana</p>
 </footer>
 
-<a href="https://wa.me/233536571713" target="_blank" id="whatsapp">WhatsApp</a>
+<a href="https://wa.me/233536571713" target="_blank" id="whatsapp">
+WhatsApp
+</a>
 
-<!-- FIREBASE -->
+<!-- ================= FIREBASE ================= -->
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 
-<!-- PAYSTACK -->
+<!-- ================= PAYSTACK ================= -->
 <script src="https://js.paystack.co/v1/inline.js"></script>
 
 <script>
-// FIREBASE CONFIG
+/* ================= FIREBASE CONFIG ================= */
 const firebaseConfig = {
   apiKey: "AIzaSyArIt3zEQuqTfhy908istAqE8eDsRd1AUg",
   authDomain: "michael-data-hub.firebaseapp.com",
@@ -228,6 +206,7 @@ const firebaseConfig = {
   appId: "1:759312152318:web:1a8aa421fe3c0de5e217af",
   measurementId: "G-F9WGWMYVHD"
 };
+
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
@@ -235,21 +214,33 @@ const db = firebase.firestore();
 let currentUser = null;
 let selectedNetwork = "";
 
-// AUTH FUNCTIONS
+/* ================= AUTH FUNCTIONS ================= */
 function signup(){
   const email=document.getElementById("email").value;
   const password=document.getElementById("password").value;
+
   auth.createUserWithEmailAndPassword(email,password)
-  .then(user=>{currentUser=user.user; showApp();})
-  .catch(err=>{document.getElementById("auth-msg").innerText=err.message;});
+  .then(user=>{
+    currentUser=user.user;
+    showApp();
+  })
+  .catch(err=>{
+    document.getElementById("auth-msg").innerText=err.message;
+  });
 }
 
 function login(){
   const email=document.getElementById("email").value;
   const password=document.getElementById("password").value;
+
   auth.signInWithEmailAndPassword(email,password)
-  .then(user=>{currentUser=user.user; showApp();})
-  .catch(err=>{document.getElementById("auth-msg").innerText=err.message;});
+  .then(user=>{
+    currentUser=user.user;
+    showApp();
+  })
+  .catch(err=>{
+    document.getElementById("auth-msg").innerText=err.message;
+  });
 }
 
 function continueGuest(){
@@ -261,34 +252,35 @@ function continueGuest(){
 function showApp(){
   document.getElementById("auth-section").style.display="none";
   document.getElementById("network-section").style.display="flex";
-  document.getElementById("logout-section").style.display="block";
+  document.getElementById("network-section").classList.remove("section");
   document.getElementById("dashboard").style.display="block";
+  document.getElementById("ai-section").style.display="block";
   loadOrders();
+  loadChat();
 }
 
-function logout(){
-  auth.signOut().then(()=>{
-    currentUser=null;
-    document.getElementById("auth-section").style.display="block";
-    document.getElementById("network-section").style.display="none";
-    document.getElementById("bundle-section").style.display="none";
-    document.getElementById("dashboard").style.display="none";
-    document.getElementById("logout-section").style.display="none";
-    document.getElementById("auth-msg").innerText="";
-    document.getElementById("dashboard-container").innerHTML="";
-  }).catch(err=>{alert("Error logging out: "+err.message);});
-}
-
-// BUNDLES
+/* ================= BUNDLES ================= */
 const mtnBundles=[
-{size:"1GB",price:5.30},{size:"2GB",price:10.20},{size:"3GB",price:14.20},{size:"4GB",price:18.30},
-{size:"5GB",price:23.00},{size:"6GB",price:27.30},{size:"8GB",price:37.00},{size:"10GB",price:45.00},
-{size:"15GB",price:65.00},{size:"20GB",price:84.00},{size:"30GB",price:123.00}
+{size:"1GB",price:5.30},
+{size:"2GB",price:10.20},
+{size:"3GB",price:14.20},
+{size:"4GB",price:18.30},
+{size:"5GB",price:23.00},
+{size:"6GB",price:27.30},
+{size:"8GB",price:37.00},
+{size:"10GB",price:45.00},
+{size:"15GB",price:65.00},
+{size:"20GB",price:84.00},
+{size:"30GB",price:123.00}
 ];
 
 const vodafoneBundles=[
-{size:"5GB",price:23.50},{size:"10GB",price:45.00},{size:"15GB",price:57.00},{size:"20GB",price:72.00},
-{size:"30GB",price:105.00},{size:"40GB",price:138.00}
+{size:"5GB",price:23.50},
+{size:"10GB",price:45.00},
+{size:"15GB",price:57.00},
+{size:"20GB",price:72.00},
+{size:"30GB",price:105.00},
+{size:"40GB",price:138.00}
 ];
 
 function selectNetwork(network){
@@ -298,24 +290,26 @@ function selectNetwork(network){
 
   const select=document.getElementById("bundle-select");
   select.innerHTML='<option disabled selected>Select bundle option</option>';
+
   const bundles=network==="MTN"?mtnBundles:vodafoneBundles;
 
   bundles.forEach(b=>{
     const option=document.createElement("option");
-    option.value=b.price; 
+    option.value=b.price;
     option.text=b.size+" - GHC "+b.price.toFixed(2);
     select.appendChild(option);
   });
 }
 
-// PAYMENT
+/* ================= PAYMENT ================= */
 function pay(){
   const bundleSelect=document.getElementById("bundle-select");
-  const phone=document.getElementById("phone").value.trim();
-  if(!bundleSelect.value){alert("Select bundle first"); return;}
+  const amount=bundleSelect.value*100;
+  const phone=document.getElementById("phone").value;
+
+  if(!amount){alert("Select bundle first");return;}
   if(!phone){alert("Enter phone number"); return;}
 
-  let amount=Math.round(parseFloat(bundleSelect.value)*100); 
   let handler=PaystackPop.setup({
     key:'pk_test_8f766e087751fca611df11cfe5ae5c86ece075ee', 
     email:currentUser.email,
@@ -324,57 +318,81 @@ function pay(){
     callback:function(response){
       saveOrder(response.reference, phone);
       alert("Payment Successful!");
-    },
-    onClose:function(){ alert("Payment closed"); }
+    }
   });
   handler.openIframe();
 }
 
-// ORDERS
+/* ================= ORDERS ================= */
 function saveOrder(ref, phone){
-  if(currentUser.uid==="guest") return;
+  if(currentUser.uid==="guest")return;
+
   db.collection("orders").add({
-    userId: currentUser.uid,
-    network: selectedNetwork,
-    bundle: document.getElementById("bundle-select").selectedOptions[0].text,
-    bundlePhone: phone,
-    reference: ref,
-    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-    status:"Pending"
+    userId:currentUser.uid,
+    phone:phone,
+    network:selectedNetwork,
+    bundle:document.getElementById("bundle-select").selectedOptions[0].text,
+    reference:ref,
+    timestamp:firebase.firestore.FieldValue.serverTimestamp()
   });
 }
 
 function loadOrders(){
+  const ordersList=document.getElementById("orders-list");
   if(currentUser.uid==="guest") return;
+
   db.collection("orders")
     .where("userId","==",currentUser.uid)
     .orderBy("timestamp","desc")
     .onSnapshot(snapshot=>{
-      const container=document.getElementById("dashboard-container");
-      container.innerHTML="";
+      ordersList.innerHTML="";
       snapshot.forEach(doc=>{
         const data=doc.data();
-        let dateStr=data.timestamp ? data.timestamp.toDate().toLocaleString():"Pending";
-        let statusText=data.status || "Pending";
-        const div=document.createElement("div");
-        div.className="order-card "+(data.network.toLowerCase());
-        div.innerHTML=`<strong>${data.bundle}</strong><br>
-        Network: ${data.network}<br>
-        Phone: ${data.bundlePhone}<br>
-        Status: ${statusText}<br>
-        Time: ${dateStr}`;
-        container.appendChild(div);
+        const time=data.timestamp?data.timestamp.toDate().toLocaleString():"Pending";
+        const li=document.createElement("li");
+        li.innerText=`${data.bundle} - ${data.network} | ${data.phone} | ${time}`;
+        ordersList.appendChild(li);
       });
     });
 }
 
-function toggleOrders(){
-  const container=document.getElementById("dashboard-container");
-  container.style.display = container.style.display==="block"?"none":"block";
+/* ================= AI CHAT ================= */
+const chatCol = db.collection("complaints");
+
+function loadChat(){
+  if(currentUser.uid==="guest") return;
+
+  chatCol.where("userId","==",currentUser.uid)
+    .orderBy("timestamp","desc")
+    .onSnapshot(snapshot=>{
+      const chatBox=document.getElementById("chat-box");
+      chatBox.innerHTML="";
+      snapshot.forEach(doc=>{
+        const data=doc.data();
+        const time=data.timestamp?data.timestamp.toDate().toLocaleString():"Pending";
+        const div=document.createElement("div");
+        div.classList.add("chat-message");
+        div.innerHTML=`<strong>You:</strong> ${data.message}<br>
+                       <strong>Admin reply:</strong> ${data.reply || "(waiting...)"}<br>
+                       <small>${time}</small>`;
+        chatBox.appendChild(div);
+      });
+    });
 }
 
-function refreshOrders(){ loadOrders(); }
-
+function sendMessage(){
+  const msg=document.getElementById("ai-input").value.trim();
+  if(!msg) return;
+  chatCol.add({
+    userId:currentUser.uid,
+    phone:document.getElementById("phone").value || "guest",
+    email:currentUser.email,
+    message:msg,
+    reply:"",
+    timestamp:firebase.firestore.FieldValue.serverTimestamp()
+  });
+  document.getElementById("ai-input").value="";
+}
 </script>
 
 </body>
