@@ -4,19 +4,21 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Michael Data Hub</title>
+
 <style>
-body {
+body{
   margin:0;
-  font-family: Arial, sans-serif;
-  background: linear-gradient(to bottom,#0b3d91,#1e40af,#0f172a);
+  font-family:Arial, sans-serif;
+  background:linear-gradient(to bottom,#0b3d91,#1e40af,#0f172a);
   color:white;
   text-align:center;
 }
 
-.container {padding:20px;}
-h1 {margin-top:20px;}
+.container{padding:20px;}
 
-.card-container {
+h1{margin-top:20px;}
+
+.card-container{
   display:flex;
   flex-wrap:wrap;
   justify-content:center;
@@ -24,24 +26,23 @@ h1 {margin-top:20px;}
   margin-top:30px;
 }
 
-.card {
+.card{
   border-radius:15px;
   padding:15px;
   width:220px;
   cursor:pointer;
-  transition:transform 0.3s;
-  text-align:center;
+  transition:0.3s;
   font-weight:bold;
   font-size:18px;
   color:white;
 }
 
-.mtn {background:#FFD700;} /* MTN Yellow */
-.vodafone {background:#E60000;} /* Vodafone Red */
+.mtn{background:#FFD700;color:black;}
+.vodafone{background:#E60000;}
 
-.card:hover {transform:scale(1.05);}
+.card:hover{transform:scale(1.05);}
 
-select,input,button {
+select,input,button{
   width:90%;
   padding:12px;
   margin-top:10px;
@@ -50,259 +51,169 @@ select,input,button {
   font-size:16px;
 }
 
-#bundle-section {
+#bundle-section{
   display:none;
   margin-top:30px;
   padding:20px;
   border-radius:12px;
-  background: linear-gradient(135deg,#1e3c72,#2a5298);
+  background:linear-gradient(135deg,#1e3c72,#2a5298);
+}
+
+#bundle-select,#phone{
+  background:black;
   color:white;
+  font-weight:300;
 }
 
-#bundle-select, #phone {
-  background-color:rgba(0,0,0,0.95);
+button{
+  background:#10b981;
   color:white;
-  font-weight:300; /* thin text */
-  padding:12px;
-  border-radius:8px;
-  font-size:16px;
-}
-
-#bundle-select option {font-weight:300;color:white;}
-
-button {background:#10b981;color:white;cursor:pointer;font-weight:bold;}
-
-#dashboard {
-  margin-top:20px;
-  background:rgba(255,255,255,0.1);
-  padding:15px;
-  border-radius:10px;
-  text-align:left;
-}
-
-#dashboard h3 {margin:5px;}
-#orders-list li {
-  padding:5px 0;
-  border-bottom:1px solid rgba(255,255,255,0.2);
+  font-weight:bold;
   cursor:pointer;
 }
 
-#delivery-note {
+#delivery-note{
   color:#FFD700;
-  font-weight:bold;
+  font-size:14px;
   margin-top:10px;
 }
 
-#whatsapp-button {
-  position: fixed;
-  bottom: 15px;
-  right: 15px;
-  background: #25D366;
-  color: white;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 12px;
-  border-radius: 50px;
-  font-weight: bold;
-  text-decoration: none;
-  font-size: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-  transition: 0.3s ease;
+.policy-box{
+  margin-top:30px;
+  padding:15px;
+  font-size:13px;
+  background:rgba(255,255,255,0.1);
+  border-radius:10px;
 }
 
-#whatsapp-button img {
-  width:18px;
-  height:18px;
-}
-
-#whatsapp-button:hover {
-  background:#1ebe5d;
-  transform: scale(1.05);
+footer{
+  margin-top:40px;
+  padding:20px;
+  background:#000;
+  font-size:14px;
 }
 </style>
 </head>
+
 <body>
 
 <div class="container">
-  <h1>Michael Data Hub</h1>
-  <p>Buy MTN & Vodafone Bundles Easily</p>
 
-  <!-- Login / Signup -->
-  <div id="auth-section">
-    <input type="email" id="email" placeholder="Email (optional)">
-    <input type="password" id="password" placeholder="Password (optional)">
-    <button onclick="signup()">Sign Up</button>
-    <button onclick="login()">Login</button>
-    <button onclick="guest()">Continue as Guest</button>
-    <p id="auth-message"></p>
-  </div>
+<h1>Michael Data Hub</h1>
+<p>Affordable MTN & Vodafone Data Bundles in Ghana</p>
 
-  <!-- Network Selection -->
-  <div class="card-container" id="network-section" style="display:none;">
-    <div class="card mtn" onclick="selectNetwork('MTN')">MTN Network</div>
-    <div class="card vodafone" onclick="selectNetwork('VODAFONE')">Vodafone Network</div>
-  </div>
-
-  <!-- Bundle Selection -->
-  <div id="bundle-section">
-    <h2 id="network-title">Bundles</h2>
-    <select id="bundle-select">
-      <option value="" disabled selected>Select bundle option</option>
-    </select>
-    <input type="text" id="phone" placeholder="Enter your phone number">
-    <p id="delivery-note">Note: Data bundles are delivered within 10 minutes to 4 hours.</p>
-    <button onclick="pay()">Pay Now</button>
-  </div>
-
-  <!-- Dashboard -->
-  <div id="dashboard" style="display:none;">
-    <h3>Recent Orders</h3>
-    <ul id="orders-list"></ul>
-  </div>
+<!-- NETWORK SELECTION -->
+<div class="card-container">
+  <div class="card mtn" onclick="selectNetwork('MTN')">MTN Bundles</div>
+  <div class="card vodafone" onclick="selectNetwork('VODAFONE')">Vodafone Bundles</div>
 </div>
 
-<!-- WhatsApp Button -->
-<a href="https://wa.me/0541712051" target="_blank" id="whatsapp-button">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
-  <span>Chat on WhatsApp</span>
-</a>
+<!-- BUNDLE SECTION -->
+<div id="bundle-section">
+  <h2 id="network-title"></h2>
 
-<!-- Firebase Compat SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+  <select id="bundle-select">
+    <option disabled selected>Select bundle option</option>
+  </select>
 
-<!-- Paystack -->
+  <input type="text" id="phone" placeholder="Enter phone number">
+
+  <p id="delivery-note">
+  Note: Bundles are delivered within 10 minutes to 4 hours after payment.
+  </p>
+
+  <button onclick="pay()">Pay Now</button>
+</div>
+
+<!-- TERMS & POLICY -->
+<div class="policy-box">
+<h3>Terms & Refund Policy</h3>
+<p>All payments are processed securely via Paystack.</p>
+<p>Bundles are delivered within 10 minutes to 4 hours.</p>
+<p>No refund after successful delivery.</p>
+<p>Ensure the phone number entered is correct before payment.</p>
+</div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+<p><strong>Michael Data Hub</strong></p>
+<p>Contact: 0541712051</p>
+<p>Email: support@michaeldatahub.com</p>
+<p>Location: Accra, Ghana</p>
+</footer>
+
+<!-- PAYSTACK SCRIPT -->
 <script src="https://js.paystack.co/v1/inline.js"></script>
 
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyDkzHecsD8_BMEKfkrt9d-EZB2Zk3VCwLc",
-  authDomain: "michael-data-hub-b5824.firebaseapp.com",
-  projectId: "michael-data-hub-b5824",
-  storageBucket: "michael-data-hub-b5824.firebasestorage.app",
-  messagingSenderId: "156026253962",
-  appId: "1:156026253962:web:9cf3c5cfe2de9c18373373"
-};
+let selectedNetwork='';
 
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
-let currentUser = null;
-let selectedNetwork = '';
-
-// MTN bundles 1-8,10,15,20,30 GB
-const mtnBundles = [
-  {size:"1GB", price:5.30},{size:"2GB", price:10.20},{size:"3GB", price:14.20},
-  {size:"4GB", price:18.30},{size:"5GB", price:23.00},{size:"6GB", price:27.30},
-  {size:"7GB", price:32.00},{size:"8GB", price:37.00},{size:"10GB", price:45.00},
-  {size:"15GB", price:65.00},{size:"20GB", price:84.00},{size:"30GB", price:123.00}
+const mtnBundles=[
+{size:"1GB",price:5.30},
+{size:"2GB",price:10.20},
+{size:"3GB",price:14.20},
+{size:"4GB",price:18.30},
+{size:"5GB",price:23.00},
+{size:"6GB",price:27.30},
+{size:"7GB",price:32.00},
+{size:"8GB",price:37.00},
+{size:"10GB",price:45.00},
+{size:"15GB",price:65.00},
+{size:"20GB",price:84.00},
+{size:"30GB",price:123.00}
 ];
 
-// Vodafone bundles 5,10,15,20,30,40 GB
-const vodafoneBundles = [
-  {size:"5GB", price:23.50},{size:"10GB", price:45.00},{size:"15GB", price:57.00},
-  {size:"20GB", price:72.00},{size:"30GB", price:105.00},{size:"40GB", price:138.00}
+const vodafoneBundles=[
+{size:"5GB",price:23.50},
+{size:"10GB",price:45.00},
+{size:"15GB",price:57.00},
+{size:"20GB",price:72.00},
+{size:"30GB",price:105.00},
+{size:"40GB",price:138.00}
 ];
-
-function signup(){
-  const email=document.getElementById("email").value.trim();
-  const password=document.getElementById("password").value.trim();
-  if(!email||!password){document.getElementById("auth-message").innerText="Email and password required for sign-up.";return;}
-  auth.createUserWithEmailAndPassword(email,password)
-    .then(userCredential=>{
-      currentUser=userCredential.user;
-      document.getElementById("auth-section").style.display="none";
-      document.getElementById("network-section").style.display="flex";
-      loadOrders();
-    })
-    .catch(error=>document.getElementById("auth-message").innerText=error.message);
-}
-
-function login(){
-  const email=document.getElementById("email").value.trim();
-  const password=document.getElementById("password").value.trim();
-  if(!email||!password){document.getElementById("auth-message").innerText="Email and password required for login.";return;}
-  auth.signInWithEmailAndPassword(email,password)
-    .then(userCredential=>{
-      currentUser=userCredential.user;
-      document.getElementById("auth-section").style.display="none";
-      document.getElementById("network-section").style.display="flex";
-      loadOrders();
-    })
-    .catch(error=>document.getElementById("auth-message").innerText=error.message);
-}
-
-function guest(){
-  currentUser={uid:"guest"};
-  document.getElementById("auth-section").style.display="none";
-  document.getElementById("network-section").style.display="flex";
-  loadOrders();
-}
 
 function selectNetwork(network){
-  selectedNetwork=network;
-  document.getElementById("bundle-section").style.display='block';
-  document.getElementById("network-title").innerText = network + " Bundles";
-  const select=document.getElementById("bundle-select");
-  select.innerHTML='<option value="" disabled selected>Select bundle option</option>';
-  const bundles=network==="MTN"?mtnBundles:vodafoneBundles;
-  bundles.forEach(b=>{
-    const option=document.createElement("option");
-    option.value=b.price;
-    option.text=`${b.size} - GHC ${b.price.toFixed(2)}`;
-    select.appendChild(option);
-  });
+selectedNetwork=network;
+document.getElementById("bundle-section").style.display="block";
+document.getElementById("network-title").innerText=network+" Bundles";
+
+let select=document.getElementById("bundle-select");
+select.innerHTML='<option disabled selected>Select bundle option</option>';
+
+let bundles=network==="MTN"?mtnBundles:vodafoneBundles;
+
+bundles.forEach(b=>{
+let option=document.createElement("option");
+option.value=b.price;
+option.text=b.size+" - GHC "+b.price.toFixed(2);
+select.appendChild(option);
+});
 }
 
 function pay(){
-  const phone=document.getElementById("phone").value.trim() || "0541712051";
-  const amount=document.getElementById("bundle-select").value*100;
-  const handler=PaystackPop.setup({
-    key:'pk_test_8f766e087751fca611df11cfe5ae5c86ece075ee',
-    email:currentUser && currentUser.email ? currentUser.email:'guest@example.com',
-    amount:amount,
-    currency:'GHS',
-    ref:''+Math.floor((Math.random()*1000000000)+1),
-    metadata:{custom_fields:[{display_name:"Phone Number",variable_name:"phone_number",value:phone}]},
-    callback:function(response){
-      saveOrder(phone,selectedNetwork,document.getElementById("bundle-select").selectedOptions[0].text,response.reference);
-      window.location.href="thankyou.html";
-    },
-    onClose:function(){alert('Transaction was not completed.');}
-  });
-  handler.openIframe();
+let phone=document.getElementById("phone").value;
+let amount=document.getElementById("bundle-select").value*100;
+
+if(!amount){
+alert("Please select a bundle.");
+return;
 }
 
-function saveOrder(phone,network,bundle,ref){
-  db.collection("orders").add({
-    userId:currentUser.uid,
-    phone:phone,
-    network:network,
-    bundle:bundle,
-    reference:ref,
-    timestamp:firebase.firestore.FieldValue.serverTimestamp()
-  }).then(()=>loadOrders());
+let handler=PaystackPop.setup({
+key:'pk_test_xxxxxxxxxxxxxxxxxxxxx', // KEEP TEST KEY FOR NOW
+email:'customer@email.com',
+amount:amount,
+currency:'GHS',
+callback:function(response){
+alert("Payment successful! Reference: "+response.reference);
+},
+onClose:function(){
+alert("Transaction cancelled.");
 }
-
-function loadOrders(){
-  if(!currentUser || currentUser.uid==="guest"){document.getElementById("dashboard").style.display="none";return;}
-  document.getElementById("dashboard").style.display="block";
-  const ordersList=document.getElementById("orders-list");
-  db.collection("orders").where("userId","==",currentUser.uid).orderBy("timestamp","desc")
-    .onSnapshot(snapshot=>{
-      ordersList.innerHTML="";
-      if(snapshot.empty){const li=document.createElement("li");li.innerText="No orders yet.";ordersList.appendChild(li);return;}
-      snapshot.forEach(doc=>{
-        const data=doc.data();
-        const li=document.createElement("li");
-        const date=data.timestamp?data.timestamp.toDate().toLocaleString():"";
-        li.innerText=`${data.network} - ${data.bundle} | Phone: ${data.phone} | ${date}`;
-        li.onclick=()=>alert(`Order Ref: ${data.reference}\nNetwork: ${data.network}\nBundle: ${data.bundle}\nPhone: ${data.phone}\nTime: ${date}`);
-        ordersList.appendChild(li);
-      });
-    });
+});
+handler.openIframe();
 }
 </script>
 
