@@ -59,6 +59,7 @@ button{
   font-weight:bold;
   cursor:pointer;
   transition:0.3s;
+  text-align:center;
 }
 
 .mtn{background:#FFD700;color:black;}
@@ -159,11 +160,11 @@ footer{
 <footer>
 <p><strong>Michael Data Hub</strong></p>
 <p>Contact: 0536576713</p>
-<p>Email: support@macldatahub.com</p>
+<p>Email: support@michaeldatahub.com</p>
 <p>Location: Accra, Ghana</p>
 </footer>
 
-<a href="https://wa.me/0541712051" target="_blank" id="whatsapp">
+<a href="https://wa.me/0536576713 target="_blank" id="whatsapp">
 WhatsApp
 </a>
 
@@ -179,9 +180,13 @@ WhatsApp
 
 /* ================= FIREBASE CONFIG ================= */
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
+  apiKey: "AIzaSyArIt3zEQuqTfhy908istAqE8eDsRd1AUg",
+  authDomain: "michael-data-hub.firebaseapp.com",
+  projectId: "michael-data-hub",
+  storageBucket: "michael-data-hub.firebasestorage.app",
+  messagingSenderId: "759312152318",
+  appId: "1:759312152318:web:1a8aa421fe3c0de5e217af",
+  measurementId: "G-F9WGWMYVHD"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -221,7 +226,8 @@ function login(){
 }
 
 function continueGuest(){
-  currentUser={uid:"guest",email:"guest@email.com"};
+  const phone=document.getElementById("phone").value || "guest";
+  currentUser={uid:"guest",email:phone+"@guest.com"};
   showApp();
 }
 
@@ -241,7 +247,6 @@ const mtnBundles=[
 {size:"4GB",price:18.30},
 {size:"5GB",price:23.00},
 {size:"6GB",price:27.30},
-{size:"7GB",price:32.00},
 {size:"8GB",price:37.00},
 {size:"10GB",price:45.00},
 {size:"15GB",price:65.00},
@@ -285,7 +290,7 @@ function pay(){
   if(!amount){alert("Select bundle first");return;}
 
   let handler=PaystackPop.setup({
-    key:'pk_test_xxxxxxxxxxxxx',
+    key:'pk_test_xxxxxxxxxxxxx', // replace with live key later
     email:currentUser.email,
     amount:amount,
     currency:'GHS',
