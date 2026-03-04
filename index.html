@@ -13,8 +13,16 @@
   .mtn{background:#FFD700;} /* MTN Yellow */
   .vodafone{background:#E60000;} /* Vodafone Red */
   .card:hover{transform:scale(1.05);}
-  select,input,button{width:90%;padding:10px;margin-top:10px;border:none;border-radius:8px;font-size:16px;}
-  button{background:#10b981;color:white;cursor:pointer;}
+  select,input,button{width:90%;padding:12px;margin-top:10px;border:none;border-radius:8px;font-size:16px;}
+  
+  /* High contrast bundle selection */
+  #bundle-select, #phone {
+    background-color: #000;
+    color: #fff;
+    font-weight: bold;
+  }
+
+  button{background:#10b981;color:white;cursor:pointer;font-weight:bold;}
   #dashboard{margin-top:20px;background:rgba(255,255,255,0.1);padding:15px;border-radius:10px;text-align:left;}
   #dashboard h3{margin:5px;}
   #orders-list li{padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.2);cursor:pointer;}
@@ -62,7 +70,7 @@
   </div>
 </div>
 
-<!-- Real WhatsApp Button -->
+<!-- WhatsApp Button -->
 <a href="https://wa.me/0541712051" target="_blank" id="whatsapp-button">
   <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
   <span>Chat on WhatsApp</span>
