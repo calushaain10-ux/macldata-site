@@ -60,7 +60,7 @@ select,input,button {
 }
 
 #bundle-select, #phone {
-  background-color:rgba(0,0,0,0.95); /* deeper background */
+  background-color:rgba(0,0,0,0.95);
   color:white;
   font-weight:300; /* thin text */
   padding:12px;
@@ -68,7 +68,7 @@ select,input,button {
   font-size:16px;
 }
 
-#bundle-select option {font-weight:300;color:white;} /* thin text */
+#bundle-select option {font-weight:300;color:white;}
 
 button {background:#10b981;color:white;cursor:pointer;font-weight:bold;}
 
@@ -95,24 +95,31 @@ button {background:#10b981;color:white;cursor:pointer;font-weight:bold;}
 
 #whatsapp-button {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
+  bottom: 15px;
+  right: 15px;
   background: #25D366;
   color: white;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px 18px;
+  gap: 6px;
+  padding: 8px 12px;
   border-radius: 50px;
   font-weight: bold;
   text-decoration: none;
-  font-size: 14px;
-  box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+  font-size: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
   transition: 0.3s ease;
 }
 
-#whatsapp-button img {width:22px;height:22px;}
-#whatsapp-button:hover {background:#1ebe5d; transform: scale(1.05);}
+#whatsapp-button img {
+  width:18px;
+  height:18px;
+}
+
+#whatsapp-button:hover {
+  background:#1ebe5d;
+  transform: scale(1.05);
+}
 </style>
 </head>
 <body>
