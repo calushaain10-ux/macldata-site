@@ -20,8 +20,9 @@
     width:90%;padding:10px;margin-top:10px;border:none;border-radius:8px;font-size:16px;
   }
   button{background:#10b981;color:white;cursor:pointer;}
-  #dashboard{margin-top:20px;background:rgba(255,255,255,0.1);padding:15px;border-radius:10px;}
+  #dashboard{margin-top:20px;background:rgba(255,255,255,0.1);padding:15px;border-radius:10px;text-align:left;}
   #dashboard h3{margin:5px;}
+  #orders-list li{padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.2);cursor:pointer;}
 </style>
 </head>
 <body>
@@ -102,6 +103,7 @@
     vodafoneBundles.push({size:i+"GB",price:price});
   }
 
+  // Signup
   function signup(){
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value.trim();
@@ -119,6 +121,7 @@
       .catch(error=>document.getElementById("auth-message").innerText=error.message);
   }
 
+  // Login
   function login(){
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value.trim();
@@ -136,6 +139,7 @@
       .catch(error=>document.getElementById("auth-message").innerText=error.message);
   }
 
+  // Guest
   function guest(){
     currentUser = {uid:"guest"};
     document.getElementById("auth-section").style.display="none";
@@ -143,6 +147,7 @@
     loadOrders();
   }
 
+  // Network select
   function selectNetwork(network){
     selectedNetwork = network;
     document.getElementById("bundle-section").style.display='block';
@@ -158,6 +163,7 @@
     });
   }
 
+  // Paystack payment
   function pay(){
     const phone = document.getElementById("phone").value.trim() || "0541712051";
     const amount = document.getElementById("bundle-select").value * 100; // in Kobo
@@ -181,8 +187,8 @@
     handler.openIframe();
   }
 
+  // Save order to Firestore
   function saveOrder(phone,network,bundle,ref){
-    if(currentUser.uid==="guest") return; // optional: skip saving for guests
     db.collection("orders").add({
       userId: currentUser.uid,
       phone: phone,
@@ -193,27 +199,36 @@
     }).then(()=>loadOrders());
   }
 
+  // Live dashboard
   function loadOrders(){
-    if(currentUser.uid==="guest"){
+    if(!currentUser || currentUser.uid==="guest"){
       document.getElementById("dashboard").style.display="none";
       return;
     }
     document.getElementById("dashboard").style.display="block";
+    const ordersList = document.getElementById("orders-list");
+    
     db.collection("orders")
       .where("userId","==",currentUser.uid)
       .orderBy("timestamp","desc")
       .onSnapshot(snapshot=>{
-        const list = document.getElementById("orders-list");
-        list.innerHTML="";
+        ordersList.innerHTML="";
+        if(snapshot.empty){
+          const li = document.createElement("li");
+          li.innerText="No orders yet.";
+          ordersList.appendChild(li);
+          return;
+        }
         snapshot.forEach(doc=>{
           const data = doc.data();
           const li = document.createElement("li");
-          li.innerText = `${data.network} - ${data.bundle} | Phone: ${data.phone} | Ref: ${data.reference}`;
-          list.appendChild(li);
+          const date = data.timestamp ? data.timestamp.toDate().toLocaleString() : "";
+          li.innerText = `${data.network} - ${data.bundle} | Phone: ${data.phone} | ${date}`;
+          li.onclick = ()=>alert(`Order Ref: ${data.reference}\nNetwork: ${data.network}\nBundle: ${data.bundle}\nPhone: ${data.phone}\nTime: ${date}`);
+          ordersList.appendChild(li);
         });
       });
   }
-
 </script>
 </body>
 </html>
