@@ -1,36 +1,133 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Michael Data Hub</title>
-<style>
-  body {margin:0;font-family:Arial;background:linear-gradient(to bottom,#0b3d91,#1e40af,#0f172a);color:white;text-align:center;}
-  .container{padding:20px;}
-  h1{margin-top:20px;}
-  .card-container{display:flex;flex-wrap:wrap;justify-content:center;gap:15px;margin-top:30px;}
-  .card{border-radius:15px;padding:15px;width:220px;cursor:pointer;transition:transform 0.3s;text-align:center;font-weight:bold;font-size:18px;color:white;}
-  .mtn{background:#FFD700;} /* MTN Yellow */
-  .vodafone{background:#E60000;} /* Vodafone Red */
-  .card:hover{transform:scale(1.05);}
-  select,input,button{width:90%;padding:12px;margin-top:10px;border:none;border-radius:8px;font-size:16px;}
-  
-  /* High contrast bundle selection */
-  #bundle-select, #phone {
-    background-color: #000;
-    color: #fff;
-    font-weight: bold;
-  }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Michael Data Hub</title>
+  <style>
+    body {
+      margin:0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom,#0b3d91,#1e40af,#0f172a);
+      color:white;
+      text-align:center;
+    }
 
-  button{background:#10b981;color:white;cursor:pointer;font-weight:bold;}
-  #dashboard{margin-top:20px;background:rgba(255,255,255,0.1);padding:15px;border-radius:10px;text-align:left;}
-  #dashboard h3{margin:5px;}
-  #orders-list li{padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.2);cursor:pointer;}
-  #delivery-note{color:#FFD700;font-weight:bold;margin-top:10px;}
-  #whatsapp-button {position: fixed;bottom: 20px;right: 20px;background: #25D366;color: white;display: flex;align-items: center;gap: 8px;padding: 12px 18px;border-radius: 50px;font-weight: bold;text-decoration: none;font-size: 14px;box-shadow: 0 6px 15px rgba(0,0,0,0.3);transition: 0.3s ease;}
-  #whatsapp-button img {width: 22px;height: 22px;}
-  #whatsapp-button:hover {background: #1ebe5d;transform: scale(1.05);}
-</style>
+    .container {
+      padding:20px;
+    }
+
+    h1 {
+      margin-top:20px;
+    }
+
+    .card-container {
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:center;
+      gap:15px;
+      margin-top:30px;
+    }
+
+    .card {
+      border-radius:15px;
+      padding:15px;
+      width:220px;
+      cursor:pointer;
+      transition:transform 0.3s;
+      text-align:center;
+      font-weight:bold;
+      font-size:18px;
+      color:white;
+    }
+
+    .mtn {background:#FFD700;} /* MTN Yellow */
+    .vodafone {background:#E60000;} /* Vodafone Red */
+
+    .card:hover {transform:scale(1.05);}
+
+    select,input,button {
+      width:90%;
+      padding:12px;
+      margin-top:10px;
+      border:none;
+      border-radius:8px;
+      font-size:16px;
+    }
+
+    #bundle-section {
+      display:none;
+      margin-top:30px;
+      padding:20px;
+      border-radius:12px;
+      background: linear-gradient(135deg,#1e3c72,#2a5298);
+      color:white;
+    }
+
+    #bundle-select, #phone {
+      background-color:rgba(0,0,0,0.8);
+      color:white;
+      font-weight:bold;
+    }
+
+    #bundle-select option {font-weight:300;color:white;} /* thin text */
+
+    button {
+      background:#10b981;
+      color:white;
+      cursor:pointer;
+      font-weight:bold;
+    }
+
+    #dashboard {
+      margin-top:20px;
+      background:rgba(255,255,255,0.1);
+      padding:15px;
+      border-radius:10px;
+      text-align:left;
+    }
+
+    #dashboard h3 {margin:5px;}
+    #orders-list li {
+      padding:5px 0;
+      border-bottom:1px solid rgba(255,255,255,0.2);
+      cursor:pointer;
+    }
+
+    #delivery-note {
+      color:#FFD700;
+      font-weight:bold;
+      margin-top:10px;
+    }
+
+    #whatsapp-button {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #25D366;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 18px;
+      border-radius: 50px;
+      font-weight: bold;
+      text-decoration: none;
+      font-size: 14px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+      transition: 0.3s ease;
+    }
+
+    #whatsapp-button img {
+      width: 22px;
+      height: 22px;
+    }
+
+    #whatsapp-button:hover {
+      background: #1ebe5d;
+      transform: scale(1.05);
+    }
+  </style>
 </head>
 <body>
 
@@ -55,7 +152,7 @@
   </div>
 
   <!-- Bundle Selection -->
-  <div id="bundle-section" style="display:none;margin-top:30px;">
+  <div id="bundle-section">
     <h2 id="network-title">Bundles</h2>
     <select id="bundle-select"></select>
     <input type="text" id="phone" placeholder="Enter your phone number">
@@ -95,7 +192,6 @@
     appId: "1:156026253962:web:9cf3c5cfe2de9c18373373"
   };
 
-  // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
   const db = firebase.firestore();
@@ -103,21 +199,31 @@
   let currentUser = null;
   let selectedNetwork = '';
 
-  // MTN bundles: 1GB = 5.3, add 4.8 per GB up to 100GB
-  const mtnBundles = [];
-  let mtnPrice = 5.3;
-  for(let gb=1; gb<=100; gb++){
-    mtnBundles.push({size: gb+"GB", price: mtnPrice.toFixed(2)});
-    mtnPrice += 4.8;
-  }
+  // MTN bundles with exact steps
+  const mtnBundles = [
+    {size: "1GB", price: 5.30},
+    {size: "2GB", price: 10.20},
+    {size: "3GB", price: 14.20},
+    {size: "4GB", price: 18.30},
+    {size: "5GB", price: 23.00},
+    {size: "6GB", price: 27.30},
+    {size: "7GB", price: 32.00},
+    {size: "8GB", price: 37.00},
+    {size: "10GB", price: 45.00},
+    {size: "15GB", price: 65.00},
+    {size: "20GB", price: 84.00},
+    {size: "30GB", price: 123.00}
+  ];
 
-  // Vodafone / ARM bundles: 5GB = 23.5, +20 per 5GB up to 100GB
-  const vodafoneBundles = [];
-  let vodPrice = 23.5;
-  for(let gb=5; gb<=100; gb+=5){
-    vodafoneBundles.push({size: gb+"GB", price: vodPrice.toFixed(2)});
-    vodPrice += 20;
-  }
+  // Vodafone / ARM bundles
+  const vodafoneBundles = [
+    {size: "5GB", price: 23.50},
+    {size: "10GB", price: 45.00},
+    {size: "15GB", price: 57.00},
+    {size: "20GB", price: 72.00},
+    {size: "30GB", price: 105.00},
+    {size: "40GB", price: 138.00}
+  ];
 
   // Signup
   function signup(){
@@ -168,7 +274,7 @@
     bundles.forEach(b=>{
       const option = document.createElement("option");
       option.value = b.price;
-      option.text = `${b.size} - GHC ${b.price}`;
+      option.text = `${b.size} - GHC ${b.price.toFixed(2)}`;
       select.appendChild(option);
     });
   }
@@ -176,7 +282,7 @@
   // Paystack payment
   function pay(){
     const phone = document.getElementById("phone").value.trim() || "0541712051";
-    const amount = document.getElementById("bundle-select").value * 100; // in Kobo
+    const amount = document.getElementById("bundle-select").value * 100;
     const handler = PaystackPop.setup({
       key: 'pk_test_8f766e087751fca611df11cfe5ae5c86ece075ee',
       email: currentUser && currentUser.email ? currentUser.email : 'guest@example.com',
@@ -193,7 +299,7 @@
     handler.openIframe();
   }
 
-  // Save order to Firestore
+  // Save order
   function saveOrder(phone,network,bundle,ref){
     db.collection("orders").add({
       userId: currentUser.uid,
@@ -225,5 +331,6 @@
       });
   }
 </script>
+
 </body>
 </html>
