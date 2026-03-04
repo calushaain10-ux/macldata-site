@@ -5,57 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Michael Data Hub</title>
 <style>
-  body {
-    margin:0;
-    font-family: Arial;
-    background: linear-gradient(to bottom,#0b3d91,#1e40af,#0f172a);
-    color:white;
-    text-align:center;
-  }
+  body {margin:0;font-family:Arial;background:linear-gradient(to bottom,#0b3d91,#1e40af,#0f172a);color:white;text-align:center;}
   .container{padding:20px;}
   h1{margin-top:20px;}
   .card-container{display:flex;flex-wrap:wrap;justify-content:center;gap:15px;margin-top:30px;}
-  .card{
-    border-radius:15px;padding:15px;width:220px;cursor:pointer;transition: transform 0.3s;text-align:center;
-    font-weight:bold;color:white;font-size:18px;
-  }
+  .card{border-radius:15px;padding:15px;width:220px;cursor:pointer;transition:transform 0.3s;text-align:center;font-weight:bold;font-size:18px;color:white;}
   .mtn{background:#FFD700;} /* MTN Yellow */
   .vodafone{background:#E60000;} /* Vodafone Red */
   .card:hover{transform:scale(1.05);}
-  select,input,button{
-    width:90%;padding:10px;margin-top:10px;border:none;border-radius:8px;font-size:16px;
-  }
+  select,input,button{width:90%;padding:10px;margin-top:10px;border:none;border-radius:8px;font-size:16px;}
   button{background:#10b981;color:white;cursor:pointer;}
   #dashboard{margin-top:20px;background:rgba(255,255,255,0.1);padding:15px;border-radius:10px;text-align:left;}
   #dashboard h3{margin:5px;}
   #orders-list li{padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.2);cursor:pointer;}
   #delivery-note{color:#FFD700;font-weight:bold;margin-top:10px;}
-  /* Real WhatsApp button */
-  #whatsapp-button {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: #25D366;
-    color: white;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 18px;
-    border-radius: 50px;
-    font-weight: bold;
-    text-decoration: none;
-    font-size: 14px;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.3);
-    transition: 0.3s ease;
-  }
-  #whatsapp-button img {
-    width: 22px;
-    height: 22px;
-  }
-  #whatsapp-button:hover {
-    background: #1ebe5d;
-    transform: scale(1.05);
-  }
+  #whatsapp-button {position: fixed;bottom: 20px;right: 20px;background: #25D366;color: white;display: flex;align-items: center;gap: 8px;padding: 12px 18px;border-radius: 50px;font-weight: bold;text-decoration: none;font-size: 14px;box-shadow: 0 6px 15px rgba(0,0,0,0.3);transition: 0.3s ease;}
+  #whatsapp-button img {width: 22px;height: 22px;}
+  #whatsapp-button:hover {background: #1ebe5d;transform: scale(1.05);}
 </style>
 </head>
 <body>
@@ -85,10 +51,7 @@
     <h2 id="network-title">Bundles</h2>
     <select id="bundle-select"></select>
     <input type="text" id="phone" placeholder="Enter your phone number">
-
-    <!-- Delivery time notice -->
     <p id="delivery-note">Note: Data bundles are delivered within 10 minutes to 4 hours.</p>
-
     <button onclick="pay()">Pay Now</button>
   </div>
 
@@ -131,29 +94,28 @@
 
   let currentUser = null;
   let selectedNetwork = '';
-  const mtnBundles = [];
-  const vodafoneBundles = [];
 
-  // MTN 1GB → 100GB, price = 5.3 * GB
-  for(let i=1;i<=100;i++){
-    const price = (5.3*i).toFixed(2);
-    mtnBundles.push({size:i+"GB",price:price});
+  // MTN bundles: 1GB = 5.3, add 4.8 per GB up to 100GB
+  const mtnBundles = [];
+  let mtnPrice = 5.3;
+  for(let gb=1; gb<=100; gb++){
+    mtnBundles.push({size: gb+"GB", price: mtnPrice.toFixed(2)});
+    mtnPrice += 4.8;
   }
 
-  // Vodafone 5GB → 50GB, 5GB step, price = 5.3 * GB
-  for(let i=5;i<=50;i+=5){
-    const price = (5.3*i).toFixed(2);
-    vodafoneBundles.push({size:i+"GB",price:price});
+  // Vodafone / ARM bundles: 5GB = 23.5, +20 per 5GB up to 100GB
+  const vodafoneBundles = [];
+  let vodPrice = 23.5;
+  for(let gb=5; gb<=100; gb+=5){
+    vodafoneBundles.push({size: gb+"GB", price: vodPrice.toFixed(2)});
+    vodPrice += 20;
   }
 
   // Signup
   function signup(){
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value.trim();
-    if(!email || !password){
-      document.getElementById("auth-message").innerText = "Email and password required for sign-up.";
-      return;
-    }
+    if(!email || !password){document.getElementById("auth-message").innerText="Email and password required for sign-up.";return;}
     auth.createUserWithEmailAndPassword(email,password)
       .then(userCredential=>{
         currentUser = userCredential.user;
@@ -168,10 +130,7 @@
   function login(){
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value.trim();
-    if(!email || !password){
-      document.getElementById("auth-message").innerText = "Email and password required for login.";
-      return;
-    }
+    if(!email || !password){document.getElementById("auth-message").innerText="Email and password required for login.";return;}
     auth.signInWithEmailAndPassword(email,password)
       .then(userCredential=>{
         currentUser = userCredential.user;
@@ -216,11 +175,7 @@
       amount: amount,
       currency: 'GHS',
       ref: ''+Math.floor((Math.random()*1000000000)+1),
-      metadata:{
-        custom_fields:[
-          {display_name:"Phone Number", variable_name:"phone_number", value:phone}
-        ]
-      },
+      metadata:{custom_fields:[{display_name:"Phone Number",variable_name:"phone_number",value:phone}]},
       callback:function(response){
         saveOrder(phone,selectedNetwork,document.getElementById("bundle-select").selectedOptions[0].text,response.reference);
         window.location.href="thankyou.html";
@@ -244,24 +199,13 @@
 
   // Live dashboard
   function loadOrders(){
-    if(!currentUser || currentUser.uid==="guest"){
-      document.getElementById("dashboard").style.display="none";
-      return;
-    }
+    if(!currentUser || currentUser.uid==="guest"){document.getElementById("dashboard").style.display="none";return;}
     document.getElementById("dashboard").style.display="block";
     const ordersList = document.getElementById("orders-list");
-    
-    db.collection("orders")
-      .where("userId","==",currentUser.uid)
-      .orderBy("timestamp","desc")
+    db.collection("orders").where("userId","==",currentUser.uid).orderBy("timestamp","desc")
       .onSnapshot(snapshot=>{
         ordersList.innerHTML="";
-        if(snapshot.empty){
-          const li = document.createElement("li");
-          li.innerText="No orders yet.";
-          ordersList.appendChild(li);
-          return;
-        }
+        if(snapshot.empty){const li = document.createElement("li");li.innerText="No orders yet.";ordersList.appendChild(li);return;}
         snapshot.forEach(doc=>{
           const data = doc.data();
           const li = document.createElement("li");
