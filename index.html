@@ -17,7 +17,7 @@ body{
 
 .container{
   padding:20px;
-  max-width:600px;
+  max-width:700px;
   margin:auto;
 }
 
@@ -42,7 +42,8 @@ button{
 #bundle-select,#phone{
   background:black;
   color:white;
-  font-weight:300;
+  font-weight:400;
+  font-size:16px;
 }
 
 .card-container{
@@ -63,7 +64,7 @@ button{
 }
 
 .mtn{background:#FFD700;color:black;}
-.vodafone{background:#E60000;}
+.vodafone{background:#E60000;color:white;}
 
 .card:hover{transform:scale(1.05);}
 
@@ -97,6 +98,12 @@ footer{
   text-decoration:none;
   font-weight:bold;
 }
+
+#logout-section button{
+  width:50%;
+  margin:auto;
+  background:#EF4444;
+}
 </style>
 </head>
 
@@ -114,13 +121,18 @@ footer{
   <button onclick="signup()">Sign Up</button>
   <button onclick="login()">Login</button>
   <button onclick="continueGuest()">Continue as Guest</button>
-  <p id="auth-msg"></p>
+  <p id="auth-msg" style="color:#FFD700;"></p>
 </div>
 
 <!-- ================== NETWORK ================== -->
 <div class="card-container section" id="network-section">
   <div class="card mtn" onclick="selectNetwork('MTN')">MTN Bundles</div>
   <div class="card vodafone" onclick="selectNetwork('VODAFONE')">Vodafone Bundles</div>
+</div>
+
+<!-- ================== LOGOUT ================== -->
+<div id="logout-section" class="section">
+  <button onclick="logout()">Logout</button>
 </div>
 
 <!-- ================== BUNDLES ================== -->
@@ -164,9 +176,7 @@ footer{
 <p>Location: Accra, Ghana</p>
 </footer>
 
-<a href="https://wa.me/233536571713" target="_blank" id="whatsapp">
-WhatsApp
-</a>
+<a href="https://wa.me/233536571713" target="_blank" id="whatsapp">WhatsApp</a>
 
 <!-- ================== FIREBASE ================== -->
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -177,7 +187,6 @@ WhatsApp
 <script src="https://js.paystack.co/v1/inline.js"></script>
 
 <script>
-
 /* ================= FIREBASE CONFIG ================= */
 const firebaseConfig = {
   apiKey: "AIzaSyArIt3zEQuqTfhy908istAqE8eDsRd1AUg",
@@ -235,32 +244,34 @@ function showApp(){
   document.getElementById("auth-section").style.display="none";
   document.getElementById("network-section").style.display="flex";
   document.getElementById("network-section").classList.remove("section");
+  document.getElementById("logout-section").style.display="block";
   loadOrders();
 }
 
-/* ================= BUNDLES ================= */
+function logout(){
+  auth.signOut().then(()=>{
+    currentUser=null;
+    document.getElementById("auth-section").style.display="block";
+    document.getElementById("network-section").style.display="none";
+    document.getElementById("bundle-section").style.display="none";
+    document.getElementById("dashboard").style.display="none";
+    document.getElementById("logout-section").style.display="none";
+    document.getElementById("auth-msg").innerText="";
+  }).catch(err=>{
+    alert("Error logging out: "+err.message);
+  });
+}
 
+/* ================= BUNDLES ================= */
 const mtnBundles=[
-{size:"1GB",price:5.30},
-{size:"2GB",price:10.20},
-{size:"3GB",price:14.20},
-{size:"4GB",price:18.30},
-{size:"5GB",price:23.00},
-{size:"6GB",price:27.30},
-{size:"8GB",price:37.00},
-{size:"10GB",price:45.00},
-{size:"15GB",price:65.00},
-{size:"20GB",price:84.00},
-{size:"30GB",price:123.00}
+{size:"1GB",price:5.30},{size:"2GB",price:10.20},{size:"3GB",price:14.20},{size:"4GB",price:18.30},
+{size:"5GB",price:23.00},{size:"6GB",price:27.30},{size:"8GB",price:37.00},{size:"10GB",price:45.00},
+{size:"15GB",price:65.00},{size:"20GB",price:84.00},{size:"30GB",price:123.00}
 ];
 
 const vodafoneBundles=[
-{size:"5GB",price:23.50},
-{size:"10GB",price:45.00},
-{size:"15GB",price:57.00},
-{size:"20GB",price:72.00},
-{size:"30GB",price:105.00},
-{size:"40GB",price:138.00}
+{size:"5GB",price:23.50},{size:"10GB",price:45.00},{size:"15GB",price:57.00},{size:"20GB",price:72.00},
+{size:"30GB",price:105.00},{size:"40GB",price:138.00}
 ];
 
 function selectNetwork(network){
@@ -282,7 +293,6 @@ function selectNetwork(network){
 }
 
 /* ================= PAYMENT ================= */
-
 function pay(){
   const bundleSelect=document.getElementById("bundle-select");
   const amount=bundleSelect.value*100;
@@ -290,7 +300,7 @@ function pay(){
   if(!amount){alert("Select bundle first");return;}
 
   let handler=PaystackPop.setup({
-    key:'pk_test_8f766e087751fca611df11cfe5ae5c86ece075ee', // ✅ YOUR PAYSTACK TEST KEY
+    key:'pk_test_8f766e087751fca611df11cfe5ae5c86ece075ee', // your test key
     email:currentUser.email,
     amount:amount,
     currency:'GHS',
@@ -303,37 +313,39 @@ function pay(){
 }
 
 /* ================= ORDERS ================= */
-
 function saveOrder(ref){
-  if(currentUser.uid==="guest")return;
+  if(currentUser.uid==="guest") return;
 
   db.collection("orders").add({
-    userId:currentUser.uid,
-    network:selectedNetwork,
-    bundle:document.getElementById("bundle-select").selectedOptions[0].text,
-    reference:ref,
-    timestamp:firebase.firestore.FieldValue.serverTimestamp()
+    userId: currentUser.uid,
+    network: selectedNetwork,
+    bundle: document.getElementById("bundle-select").selectedOptions[0].text,
+    bundlePhone: document.getElementById("phone").value || "N/A",
+    reference: ref,
+    timestamp: firebase.firestore.FieldValue.serverTimestamp()
   });
 }
 
 function loadOrders(){
-  if(currentUser.uid==="guest")return;
+  if(currentUser.uid==="guest") return;
 
   document.getElementById("dashboard").style.display="block";
 
   db.collection("orders")
-  .where("userId","==",currentUser.uid)
-  .onSnapshot(snapshot=>{
-    const list=document.getElementById("orders-list");
-    list.innerHTML="";
-    snapshot.forEach(doc=>{
-      const li=document.createElement("li");
-      li.innerText=doc.data().bundle+" - "+doc.data().network;
-      list.appendChild(li);
+    .where("userId","==",currentUser.uid)
+    .orderBy("timestamp","desc")
+    .onSnapshot(snapshot=>{
+      const list=document.getElementById("orders-list");
+      list.innerHTML="";
+      snapshot.forEach(doc=>{
+        const data = doc.data();
+        const li=document.createElement("li");
+        let dateStr = data.timestamp ? data.timestamp.toDate().toLocaleString() : "Pending";
+        li.innerText = `${data.bundle} - ${data.network} | Phone: ${data.bundlePhone} | Time: ${dateStr}`;
+        list.appendChild(li);
+      });
     });
-  });
 }
-
 </script>
 
 </body>
