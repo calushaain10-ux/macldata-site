@@ -61,6 +61,7 @@ button:hover{opacity:0.9;}
   cursor:pointer;
   transition:0.3s;
   font-weight:bold;
+  text-align:center;
 }
 
 .mtn{background:#FFD700;color:black;}
@@ -146,20 +147,22 @@ footer{
   border-radius:50%;
   font-size:16px;
   cursor:pointer;
+  z-index:1002;
 }
 
 #ai-box{
   position:fixed;
   bottom:120px;
   right:15px;
-  width:350px;
-  max-height:400px;
+  width:300px;
+  height:300px;
   background:#1F2937;
   border-radius:10px;
   display:none;
   flex-direction:column;
   overflow:hidden;
   box-shadow:0 4px 8px rgba(0,0,0,0.3);
+  z-index:1001;
 }
 
 #ai-messages{
@@ -297,7 +300,6 @@ footer{
 <script src="https://js.paystack.co/v1/inline.js"></script>
 
 <script>
-/* ================= FIREBASE CONFIG ================= */
 const firebaseConfig = {
   apiKey: "AIzaSyArIt3zEQuqTfhy908istAqE8eDsRd1AUg",
   authDomain: "michael-data-hub.firebaseapp.com",
@@ -315,41 +317,6 @@ const db = firebase.firestore();
 let currentUser = null;
 let selectedNetwork = "";
 
-/* ================= AUTH ================== */
-function signup(){
-  const email=document.getElementById("email").value;
-  const password=document.getElementById("password").value;
-  auth.createUserWithEmailAndPassword(email,password)
-  .then(user=>{currentUser=user.user;showApp();})
-  .catch(err=>document.getElementById("auth-msg").innerText=err.message);
-}
-
-function login(){
-  const email=document.getElementById("email").value;
-  const password=document.getElementById("password").value;
-  auth.signInWithEmailAndPassword(email,password)
-  .then(user=>{currentUser=user.user;showApp();})
-  .catch(err=>document.getElementById("auth-msg").innerText=err.message);
-}
-
-function continueGuest(){
-  const phone=document.getElementById("phone").value || "guest";
-  currentUser={uid:"guest",email:phone+"@guest.com"};
-  showApp();
-}
-
-function logout(){
-  auth.signOut();
-  location.reload();
-}
-
-function showApp(){
-  document.getElementById("auth-section").style.display="none";
-  document.getElementById("network-section").style.display="flex";
-  loadOrders();
-}
-
-/* ================= BUNDLES ================== */
 const mtnBundles=[
 {size:"1GB",price:5.30},{size:"2GB",price:10.20},{size:"3GB",price:14.20},
 {size:"4GB",price:18.30},{size:"5GB",price:23.00},{size:"6GB",price:27.30},
@@ -360,6 +327,14 @@ const vodafoneBundles=[
 {size:"5GB",price:23.50},{size:"10GB",price:45.00},{size:"15GB",price:57.00},
 {size:"20GB",price:72.00},{size:"30GB",price:105.00},{size:"40GB",price:138.00}];
 
+/* ================= AUTH ================== */
+function signup(){const email=document.getElementById("email").value;const password=document.getElementById("password").value;auth.createUserWithEmailAndPassword(email,password).then(user=>{currentUser=user.user;showApp();}).catch(err=>document.getElementById("auth-msg").innerText=err.message);}
+function login(){const email=document.getElementById("email").value;const password=document.getElementById("password").value;auth.signInWithEmailAndPassword(email,password).then(user=>{currentUser=user.user;showApp();}).catch(err=>document.getElementById("auth-msg").innerText=err.message);}
+function continueGuest(){const phone=document.getElementById("phone").value || "guest";currentUser={uid:"guest",email:phone+"@guest.com"};showApp();}
+function logout(){auth.signOut();location.reload();}
+function showApp(){document.getElementById("auth-section").style.display="none";document.getElementById("network-section").style.display="flex";loadOrders();}
+
+/* ================= BUNDLES ================== */
 function selectNetwork(network){
   selectedNetwork=network;
   openSection('bundle-section');
@@ -431,40 +406,20 @@ function loadOrders(){
       }
     });
 }
-
 function refreshOrders(){ loadOrders(); }
 
 /* ================= ACCOUNT ================== */
-function changeEmail(){
-  const newEmail=document.getElementById("new-email").value;
-  if(currentUser && newEmail){
-    currentUser.updateEmail(newEmail).then(()=>alert("Email changed successfully")).catch(err=>alert(err.message));
-  }
-}
-
-function changePassword(){
-  const newPassword=document.getElementById("new-password").value;
-  if(currentUser && newPassword){
-    currentUser.updatePassword(newPassword).then(()=>alert("Password changed successfully")).catch(err=>alert(err.message));
-  }
-}
+function changeEmail(){const newEmail=document.getElementById("new-email").value;if(currentUser && newEmail){currentUser.updateEmail(newEmail).then(()=>alert("Email changed successfully")).catch(err=>alert(err.message));}}
+function changePassword(){const newPassword=document.getElementById("new-password").value;if(currentUser && newPassword){currentUser.updatePassword(newPassword).then(()=>alert("Password changed successfully")).catch(err=>alert(err.message));}}
 
 /* ================= SIDE MENU ================== */
-document.getElementById("menu-btn").onclick=function(){
-  const menu=document.getElementById("side-menu");
-  menu.style.left=(menu.style.left=="0px"?"-250px":"0px");
-}
-
-function openSection(id){
-  document.querySelectorAll(".section").forEach(s=>s.style.display="none");
-  document.getElementById(id).style.display="block";
-  document.getElementById("side-menu").style.left="-250px";
-}
+document.getElementById("menu-btn").onclick=function(){const menu=document.getElementById("side-menu");menu.style.left=(menu.style.left=="0px"?"-250px":"0px");}
+function openSection(id){document.querySelectorAll(".section").forEach(s=>s.style.display="none");document.getElementById(id).style.display="block";document.getElementById("side-menu").style.left="-250px";}
 
 /* ================= AI CHAT ================== */
 function toggleAI(){
   const box=document.getElementById("ai-box");
-  box.style.display=box.style.display==="flex"?"none":"flex";
+  box.style.display=(box.style.display==="flex")?"none":"flex";
 }
 
 function sendAIMessage(){
@@ -480,17 +435,34 @@ function sendAIMessage(){
   input.value="";
   messages.scrollTop=messages.scrollHeight;
 
-  // Simulate AI reply
-  setTimeout(()=>{
-    const aiMsg=document.createElement("div");
-    aiMsg.style.textAlign="left";
-    aiMsg.style.margin="5px 0";
-    aiMsg.innerText="AI: Please be patient, we are checking your request and will respond shortly.";
-    messages.appendChild(aiMsg);
-    messages.scrollTop=messages.scrollHeight;
-  },1000);
+  // AI asks series of questions
+  const aiQuestions=[
+    "AI: Hello! How may I assist you today?",
+    "AI: Can you provide your phone number?",
+    "AI: Which network are you using? MTN or Vodafone?",
+    "AI: Which bundle size are you trying to purchase?",
+    "AI: Have you tried purchasing before?",
+    "AI: Are you facing a payment issue?",
+    "AI: Do you want a delivery time estimate?",
+    "AI: Can you provide the reference number if any?",
+    "AI: Are you logged in with your correct account?",
+    "AI: Thank you for your patience. We will resolve your request shortly."
+  ];
+  let idx=0;
+  function sendNext(){
+    if(idx>=aiQuestions.length) return;
+    setTimeout(()=>{
+      const aiMsg=document.createElement("div");
+      aiMsg.style.textAlign="left";
+      aiMsg.style.margin="5px 0";
+      aiMsg.innerText=aiQuestions[idx];
+      messages.appendChild(aiMsg);
+      messages.scrollTop=messages.scrollHeight;
+      idx++;
+    }, 1000*(idx+1));
+  }
+  for(let i=0;i<aiQuestions.length;i++){sendNext();}
 }
 </script>
-
 </body>
 </html>
