@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Michael Data Hub</title>
-
 <style>
 body {
   margin:0;
@@ -12,7 +11,6 @@ body {
   background: linear-gradient(to bottom,#0b3d91,#1e40af,#0f172a);
   color:white;
 }
-
 .container{
   max-width:900px;
   margin:auto;
@@ -20,9 +18,7 @@ body {
   text-align:center;
   position:relative;
 }
-
 h1,h3{margin:10px 0;}
-
 input, select, button{
   padding:10px;
   margin:5px 0;
@@ -30,7 +26,6 @@ input, select, button{
   border:none;
   font-size:16px;
 }
-
 button{
   background:#10b981;
   color:white;
@@ -38,22 +33,18 @@ button{
   cursor:pointer;
   transition:0.3s;
 }
-
 button:hover{opacity:0.9;}
-
 #bundle-select, #phone{
   background:black;
   color:white;
   font-weight:300;
 }
-
 .card-container{
   display:flex;
   justify-content:center;
   gap:15px;
   margin:20px 0;
 }
-
 .card{
   padding:20px;
   border-radius:15px;
@@ -62,14 +53,10 @@ button:hover{opacity:0.9;}
   font-weight:bold;
   text-align:center;
 }
-
 .mtn{background:#FFD700;color:black;}
 .vodafone{background:#E60000;color:white;}
-
 .card:hover{transform:scale(1.05);}
-
 .section{display:none;margin-top:20px;text-align:center;}
-
 .policy-box{
   margin-top:30px;
   padding:15px;
@@ -78,7 +65,6 @@ button:hover{opacity:0.9;}
   border-radius:10px;
   text-align:left;
 }
-
 footer{
   margin-top:40px;
   padding:20px;
@@ -86,7 +72,6 @@ footer{
   font-size:14px;
   text-align:center;
 }
-
 #whatsapp{
   position:fixed;
   bottom:15px;
@@ -99,8 +84,6 @@ footer{
   text-decoration:none;
   font-weight:bold;
 }
-
-/* ================== SIDE MENU ================== */
 #menu-btn{
   position:fixed;
   top:15px;
@@ -108,9 +91,8 @@ footer{
   font-size:28px;
   cursor:pointer;
   z-index:1001;
-  display:none; /* hide initially */
+  display:none;
 }
-
 #side-menu{
   position:fixed;
   top:0;
@@ -123,7 +105,6 @@ footer{
   z-index:1000;
   overflow:auto;
 }
-
 #side-menu a{
   padding:10px 20px;
   text-decoration:none;
@@ -132,10 +113,7 @@ footer{
   font-size:16px;
   transition:0.3s;
 }
-
 #side-menu a:hover{background:#333;}
-
-/* ================= AI CHAT ================== */
 #ai-btn{
   position:fixed;
   bottom:70px;
@@ -149,7 +127,6 @@ footer{
   cursor:pointer;
   z-index:1002;
 }
-
 #ai-box{
   position:fixed;
   bottom:120px;
@@ -164,19 +141,16 @@ footer{
   box-shadow:0 4px 8px rgba(0,0,0,0.3);
   z-index:1001;
 }
-
 #ai-messages{
   flex:1;
   padding:10px;
   overflow-y:auto;
   font-size:14px;
 }
-
 #ai-input{
   display:flex;
   border-top:1px solid #333;
 }
-
 #ai-input input{
   flex:1;
   padding:8px;
@@ -186,7 +160,6 @@ footer{
   background:#111827;
   color:white;
 }
-
 #ai-input button{
   padding:8px 12px;
   background:#10b981;
@@ -194,8 +167,6 @@ footer{
   border:none;
   cursor:pointer;
 }
-
-/* ================= DASHBOARD ================== */
 #orders-list{
   text-align:left;
   max-height:300px;
@@ -204,9 +175,7 @@ footer{
 </style>
 </head>
 <body>
-
 <div id="menu-btn">&#9776;</div>
-
 <div id="side-menu">
   <a href="#" onclick="openSection('dashboard-section')">My Orders</a>
   <a href="#" onclick="openSection('account-section')">Account Settings</a>
@@ -214,11 +183,10 @@ footer{
 </div>
 
 <div class="container">
-
 <h1>Michael Data Hub</h1>
 <p>Affordable MTN & Vodafone Data Bundles in Ghana</p>
 
-<!-- ================= AUTH ================== -->
+<!-- AUTH -->
 <div id="auth-section" class="section" style="display:block;">
   <input type="email" id="email" placeholder="Enter Email">
   <input type="password" id="password" placeholder="Enter Password">
@@ -228,15 +196,14 @@ footer{
   <p id="auth-msg"></p>
 </div>
 
-<!-- ================== NETWORK SELECTION (VISIBLE AFTER LOGIN/GUEST) ================== -->
+<!-- NETWORK & BUNDLES (IMMEDIATE AFTER LOGIN) -->
 <div class="card-container section" id="network-section">
   <div class="card mtn" onclick="selectNetwork('MTN')">MTN Bundles</div>
   <div class="card vodafone" onclick="selectNetwork('VODAFONE')">Vodafone Bundles</div>
 </div>
 
-<!-- ================== BUNDLES SELECTION (VISIBLE AFTER NETWORK CLICK OR IMMEDIATE) ================== -->
 <div class="section" id="bundle-section">
-  <h3 id="network-title"></h3>
+  <h3 id="network-title">Select Your Bundle</h3>
   <select id="bundle-select">
     <option disabled selected>Select bundle option</option>
   </select>
@@ -245,14 +212,14 @@ footer{
   <button onclick="pay()">Pay Now</button>
 </div>
 
-<!-- ================== DASHBOARD ================== -->
+<!-- DASHBOARD -->
 <div class="section" id="dashboard-section">
 <h3>My Orders</h3>
 <ul id="orders-list"></ul>
 <button onclick="refreshOrders()">Refresh Orders</button>
 </div>
 
-<!-- ================= ACCOUNT ================== -->
+<!-- ACCOUNT -->
 <div class="section" id="account-section">
 <h3>Account Settings</h3>
 <input type="email" id="new-email" placeholder="New Email">
@@ -268,7 +235,6 @@ footer{
 <p>• No refund after successful delivery.</p>
 <p>• Ensure the phone number entered is correct before payment.</p>
 </div>
-
 </div>
 
 <footer>
@@ -279,7 +245,6 @@ footer{
 </footer>
 
 <a href="https://wa.me/233536571713" target="_blank" id="whatsapp">WhatsApp</a>
-
 <button id="ai-btn" onclick="toggleAI()">AI</button>
 
 <div id="ai-box">
@@ -305,72 +270,45 @@ const firebaseConfig = {
   appId: "1:759312152318:web:1a8aa421fe3c0de5e217af",
   measurementId: "G-F9WGWMYVHD"
 };
-
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
-
 let currentUser = null;
 let selectedNetwork = "";
-
 const mtnBundles=[
-{size:"1GB",price:5.30},{size:"2GB",price:10.20},{size:"3GB",price:14.20},
-{size:"4GB",price:18.30},{size:"5GB",price:23.00},{size:"6GB",price:27.30},
-{size:"8GB",price:37.00},{size:"10GB",price:45.00},{size:"15GB",price:65.00},
-{size:"20GB",price:84.00},{size:"30GB",price:123.00}];
-
+{size:"1GB",price:5.30},{size:"2GB",price:10.20},{size:"3GB",price:14.20},{size:"4GB",price:18.30},{size:"5GB",price:23.00},{size:"6GB",price:27.30},{size:"8GB",price:37.00},{size:"10GB",price:45.00},{size:"15GB",price:65.00},{size:"20GB",price:84.00},{size:"30GB",price:123.00}];
 const vodafoneBundles=[
-{size:"5GB",price:23.50},{size:"10GB",price:45.00},{size:"15GB",price:57.00},
-{size:"20GB",price:72.00},{size:"30GB",price:105.00},{size:"40GB",price:138.00}];
+{size:"5GB",price:23.50},{size:"10GB",price:45.00},{size:"15GB",price:57.00},{size:"20GB",price:72.00},{size:"30GB",price:105.00},{size:"40GB",price:138.00}];
 
-/* ================= AUTH ================== */
 function signup(){
   const email=document.getElementById("email").value;
   const password=document.getElementById("password").value;
   auth.createUserWithEmailAndPassword(email,password)
-    .then(user=>{
-      currentUser=user.user;
-      showApp(true); // <-- pass true to immediately show bundles
-    })
-    .catch(err=>document.getElementById("auth-msg").innerText=err.message);
+  .then(user=>{currentUser=user.user;showApp(true);})
+  .catch(err=>document.getElementById("auth-msg").innerText=err.message);
 }
-
 function login(){
   const email=document.getElementById("email").value;
   const password=document.getElementById("password").value;
   auth.signInWithEmailAndPassword(email,password)
-    .then(user=>{
-      currentUser=user.user;
-      showApp(true); // <-- pass true to immediately show bundles
-    })
-    .catch(err=>document.getElementById("auth-msg").innerText=err.message);
+  .then(user=>{currentUser=user.user;showApp(true);})
+  .catch(err=>document.getElementById("auth-msg").innerText=err.message);
 }
-
-function continueGuest(){
-  const phone=document.getElementById("phone").value || "guest";
-  currentUser={uid:"guest",email:phone+"@guest.com"};
-  showApp(true);
-}
-
+function continueGuest(){currentUser={uid:"guest",email:"guest@guest.com"};showApp(true);}
 function logout(){auth.signOut();location.reload();}
 
-/* ================= SHOW APP ================== */
 function showApp(showBundles=false){
   document.getElementById("auth-section").style.display="none";
-  document.getElementById("network-section").style.display="flex"; // show network selection
-  document.getElementById("menu-btn").style.display="block"; // show menu
-  document.getElementById("bundle-section").style.display=showBundles?"block":"none"; // show bundles if flag true
-  if(showBundles && !selectedNetwork) {
-    // automatically show MTN bundles as default if no network selected
-    selectNetwork("MTN");
-  }
+  document.getElementById("network-section").style.display="flex";
+  document.getElementById("bundle-section").style.display=showBundles?"block":"none";
+  document.getElementById("menu-btn").style.display="block";
+  if(showBundles && !selectedNetwork) selectNetwork("MTN");
   loadOrders();
 }
 
-/* ================= BUNDLES ================== */
 function selectNetwork(network){
   selectedNetwork=network;
-  document.getElementById("bundle-section").style.display="block"; // always show bundle section
+  document.getElementById("bundle-section").style.display="block";
   document.getElementById("network-title").innerText=network+" Bundles";
   const select=document.getElementById("bundle-select");
   select.innerHTML='<option disabled selected>Select bundle option</option>';
@@ -383,7 +321,6 @@ function selectNetwork(network){
   });
 }
 
-/* ================= PAY ================== */
 function pay(){
   const bundleSelect=document.getElementById("bundle-select");
   const amount=bundleSelect.value*100;
@@ -401,7 +338,6 @@ function pay(){
   handler.openIframe();
 }
 
-/* ================= ORDERS ================== */
 function saveOrder(ref){
   if(currentUser.uid==="guest") return;
   db.collection("orders").add({
@@ -418,41 +354,25 @@ function loadOrders(){
   if(currentUser.uid==="guest") return;
   openSection('dashboard-section');
   db.collection("orders").where("userId","==",currentUser.uid)
-    .orderBy("timestamp","desc")
-    .onSnapshot(snapshot=>{
-      const list=document.getElementById("orders-list");
-      list.innerHTML="";
-      if(snapshot.empty){
-        const li=document.createElement("li");
-        li.innerText="No orders yet.";
-        list.appendChild(li);
-      } else {
-        snapshot.forEach(doc=>{
-          const data=doc.data();
-          const li=document.createElement("li");
-          const time=data.timestamp?new Date(data.timestamp.seconds*1000).toLocaleString():"Pending";
-          li.innerText=`${data.bundle} - ${data.network} | Number: ${data.phone} | Time: ${time}`;
-          list.appendChild(li);
-        });
-      }
-    });
+  .orderBy("timestamp","desc")
+  .onSnapshot(snapshot=>{
+    const list=document.getElementById("orders-list");
+    list.innerHTML="";
+    if(snapshot.empty){const li=document.createElement("li");li.innerText="No orders yet.";list.appendChild(li);}
+    else {snapshot.forEach(doc=>{const data=doc.data();const li=document.createElement("li");const time=data.timestamp?new Date(data.timestamp.seconds*1000).toLocaleString():"Pending";li.innerText=`${data.bundle} - ${data.network} | Number: ${data.phone} | Time: ${time}`;list.appendChild(li);});}
+  });
 }
-function refreshOrders(){ loadOrders(); }
 
-/* ================= ACCOUNT ================== */
+function refreshOrders(){ loadOrders(); }
 function changeEmail(){const newEmail=document.getElementById("new-email").value;if(currentUser && newEmail){currentUser.updateEmail(newEmail).then(()=>alert("Email changed successfully")).catch(err=>alert(err.message));}}
 function changePassword(){const newPassword=document.getElementById("new-password").value;if(currentUser && newPassword){currentUser.updatePassword(newPassword).then(()=>alert("Password changed successfully")).catch(err=>alert(err.message));}}
-
-/* ================= SIDE MENU ================== */
 document.getElementById("menu-btn").onclick=function(){const menu=document.getElementById("side-menu");menu.style.left=(menu.style.left=="0px"?"-250px":"0px");}
 function openSection(id){document.querySelectorAll(".section").forEach(s=>s.style.display="none");document.getElementById(id).style.display="block";document.getElementById("side-menu").style.left="-250px";}
 
-/* ================= AI CHAT ================== */
 function toggleAI(){
   const box=document.getElementById("ai-box");
   box.style.display=(box.style.display==="flex")?"none":"flex";
 }
-
 function sendAIMessage(){
   const input=document.getElementById("ai-text");
   const msg=input.value.trim();
