@@ -189,7 +189,6 @@ footer{
 </div>
 
 <div class="container">
-
 <h1>Michael Data Hub</h1>
 <p>Affordable MTN & Vodafone Data Bundles in Ghana</p>
 
@@ -203,7 +202,7 @@ footer{
   <p id="auth-msg"></p>
 </div>
 
-<!-- ================== NETWORK & BUNDLES (VISIBLE AFTER LOGIN/GUEST) ================== -->
+<!-- ================= DASHBOARD INTERFACE ================== -->
 <div id="dashboard-interface" class="section">
   <div class="card-container" id="network-section">
     <div class="card mtn" onclick="selectNetwork('MTN')">MTN Bundles</div>
@@ -254,13 +253,14 @@ footer{
 <p>Location: Accra, Ghana</p>
 </footer>
 
-<a href="https://wa.me/233536576713" target="_blank" id="whatsapp">WhatsApp</a>
-<button id="ai-btn" onclick="toggleAI()">AI</button>
+<a href="https://wa.me/233536571713" target="_blank" id="whatsapp">WhatsApp</a>
 
+<!-- ================= AI ================== -->
+<button id="ai-btn" onclick="toggleAI()">AI</button>
 <div id="ai-box">
   <div id="ai-messages"></div>
   <div id="ai-input">
-    <input type="text" id="ai-text" placeholder="Type your message...">
+    <input type="text" id="ai-text" placeholder="Type your question...">
     <button onclick="sendAIMessage()">Send</button>
   </div>
 </div>
@@ -291,20 +291,24 @@ let selectedNetwork = "";
 const mtnBundles=[{size:"1GB",price:5.30},{size:"2GB",price:10.20},{size:"3GB",price:14.20},{size:"4GB",price:18.30},{size:"5GB",price:23.00},{size:"6GB",price:27.30},{size:"8GB",price:37.00},{size:"10GB",price:45.00},{size:"15GB",price:65.00},{size:"20GB",price:84.00},{size:"30GB",price:123.00}];
 const vodafoneBundles=[{size:"5GB",price:23.50},{size:"10GB",price:45.00},{size:"15GB",price:57.00},{size:"20GB",price:72.00},{size:"30GB",price:105.00},{size:"40GB",price:138.00}];
 
-// Auth functions
+// AUTH FUNCTIONS
 function signup(){const email=document.getElementById("email").value;const password=document.getElementById("password").value;auth.createUserWithEmailAndPassword(email,password).then(user=>{currentUser=user.user;showApp();}).catch(err=>document.getElementById("auth-msg").innerText=err.message);}
 function login(){const email=document.getElementById("email").value;const password=document.getElementById("password").value;auth.signInWithEmailAndPassword(email,password).then(user=>{currentUser=user.user;showApp();}).catch(err=>document.getElementById("auth-msg").innerText=err.message);}
-function continueGuest(){const phone=document.getElementById("phone").value || "guest";currentUser={uid:"guest",email:phone+"@guest.com"};showApp();}
-function logout(){auth.signOut();location.reload();}
+function continueGuest(){const phone="guest";currentUser={uid:"guest",email:phone+"@guest.com"};showApp();}
+function logout(){auth.signOut();localStorage.removeItem("lastSection");location.reload();}
 
 function showApp(){
   document.getElementById("auth-section").style.display="none";
   document.getElementById("dashboard-interface").style.display="block";
   document.getElementById("menu-btn").style.display="block";
   loadOrders();
+
+  // Keep last opened section on refresh
+  const last = localStorage.getItem("lastSection") || "dashboard-interface";
+  openSection(last);
 }
 
-// Bundles
+// BUNDLES
 function selectNetwork(network){
   selectedNetwork=network;
   document.getElementById("bundle-section").style.display="block";
@@ -320,7 +324,7 @@ function selectNetwork(network){
   });
 }
 
-// Pay
+// PAY
 function pay(){
   const bundleSelect=document.getElementById("bundle-select");
   const amount=bundleSelect.value*100;
@@ -338,7 +342,7 @@ function pay(){
   handler.openIframe();
 }
 
-// Orders
+// ORDERS
 function saveOrder(ref){
   if(currentUser.uid==="guest") return;
   db.collection("orders").add({
@@ -375,47 +379,60 @@ function loadOrders(){
 }
 function refreshOrders(){ loadOrders(); }
 
-// Account
+// ACCOUNT
 function changeEmail(){const newEmail=document.getElementById("new-email").value;if(currentUser && newEmail){currentUser.updateEmail(newEmail).then(()=>alert("Email changed successfully")).catch(err=>alert(err.message));}}
 function changePassword(){const newPassword=document.getElementById("new-password").value;if(currentUser && newPassword){currentUser.updatePassword(newPassword).then(()=>alert("Password changed successfully")).catch(err=>alert(err.message));}}
 
-// Menu
+// MENU
 document.getElementById("menu-btn").onclick=function(){const menu=document.getElementById("side-menu");menu.style.left=(menu.style.left=="0px"?"-250px":"0px");}
-function openSection(id){document.querySelectorAll(".section").forEach(s=>s.style.display="none");document.getElementById(id).style.display="block";document.getElementById("side-menu").style.left="-250px";}
-
-// AI
-function toggleAI(){
-  const box=document.getElementById("ai-box");
-  box.style.display=(box.style.display==="flex")?"none":"flex";
+function openSection(id){
+  document.querySelectorAll(".section").forEach(s=>s.style.display="none");
+  document.getElementById(id).style.display="block";
+  document.getElementById("side-menu").style.left="-250px";
+  localStorage.setItem("lastSection", id); // remember last section
 }
 
-function sendAIMessage(){
-  const input=document.getElementById("ai-text");
-  const msg=input.value.trim();
+// ================= AI CHAT ==================
+async function sendAIMessage(){
+  const input = document.getElementById("ai-text");
+  const msg = input.value.trim();
   if(!msg) return;
-  const messages=document.getElementById("ai-messages");
-  const userMsg=document.createElement("div");
+  input.value="";
+  const messages = document.getElementById("ai-messages");
+
+  const userMsg = document.createElement("div");
   userMsg.style.textAlign="right";
   userMsg.style.margin="5px 0";
-  userMsg.innerText="You: "+msg;
+  userMsg.innerText = "You: " + msg;
   messages.appendChild(userMsg);
-  input.value="";
-  messages.scrollTop=messages.scrollHeight;
+  messages.scrollTop = messages.scrollHeight;
 
-  setTimeout(()=>{
-    const aiMsg=document.createElement("div");
+  try{
+    const response = await fetch("/api/askAI", {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({question: msg})
+    });
+    const data = await response.json();
+    const aiMsg = document.createElement("div");
     aiMsg.style.textAlign="left";
     aiMsg.style.margin="5px 0";
-    let reply="AI: How may I help you today?";
-    if(msg.toLowerCase().includes("mtn")) reply="AI: You selected MTN, please choose your bundle.";
-    else if(msg.toLowerCase().includes("vodafone")) reply="AI: You selected Vodafone, please choose your bundle.";
-    else if(msg.toLowerCase().includes("price")) reply="AI: You can see the prices next to each bundle size.";
-    else if(msg.toLowerCase().includes("pay")) reply="AI: Please proceed with payment using the 'Pay Now' button.";
-    else if(msg.toLowerCase().includes("order")) reply="AI: You can view your orders by clicking the menu and selecting 'My Orders'.";
-    aiMsg.innerText=reply;
+    aiMsg.innerText = "AI: " + data.answer;
     messages.appendChild(aiMsg);
-    messages.scrollTop=messages.scrollHeight;
-  },1000);
+    messages.scrollTop = messages.scrollHeight;
+  } catch(err){
+    console.error(err);
+    const aiMsg = document.createElement("div");
+    aiMsg.style.textAlign="left";
+    aiMsg.style.margin="5px 0";
+    aiMsg.innerText = "AI: Sorry, something went wrong!";
+    messages.appendChild(aiMsg);
+  }
+}
+
+function toggleAI(){
+  const box = document.getElementById("ai-box");
+  box.style.display = (box.style.display==="flex")?"none":"flex";
 }
 </script>
 </body>
