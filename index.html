@@ -182,6 +182,7 @@ footer{
 <div id="menu-btn">&#9776;</div>
 
 <div id="side-menu">
+  <a href="#" onclick="openSection('dashboard-interface')">Home</a>
   <a href="#" onclick="openSection('dashboard-section')">My Orders</a>
   <a href="#" onclick="openSection('account-section')">Account Settings</a>
   <a href="#" onclick="logout()">Logout</a>
@@ -202,7 +203,7 @@ footer{
   <p id="auth-msg"></p>
 </div>
 
-<!-- ================== NETWORK & BUNDLES (VISIBLE AFTER LOGIN/GUEST) ================== -->
+<!-- ================== DASHBOARD INTERFACE ================== -->
 <div id="dashboard-interface" class="section">
   <div class="card-container" id="network-section">
     <div class="card mtn" onclick="selectNetwork('MTN')">MTN Bundles</div>
@@ -294,11 +295,26 @@ const vodafoneBundles=[{size:"5GB",price:23.50},{size:"10GB",price:45.00},{size:
 function signup(){const email=document.getElementById("email").value;const password=document.getElementById("password").value;auth.createUserWithEmailAndPassword(email,password).then(user=>{currentUser=user.user;showApp();}).catch(err=>document.getElementById("auth-msg").innerText=err.message);}
 function login(){const email=document.getElementById("email").value;const password=document.getElementById("password").value;auth.signInWithEmailAndPassword(email,password).then(user=>{currentUser=user.user;showApp();}).catch(err=>document.getElementById("auth-msg").innerText=err.message);}
 function continueGuest(){const phone=document.getElementById("phone").value || "guest";currentUser={uid:"guest",email:phone+"@guest.com"};showApp();}
-function logout(){auth.signOut();location.reload();}
+function logout(){auth.signOut();localStorage.removeItem("savedUser");location.reload();}
+
+// Keep user logged in
+auth.onAuthStateChanged(user=>{
+  if(user){
+    currentUser=user;
+    localStorage.setItem("savedUser", JSON.stringify({uid:user.uid,email:user.email}));
+    showApp();
+  } else {
+    const saved=localStorage.getItem("savedUser");
+    if(saved){
+      currentUser=JSON.parse(saved);
+      showApp();
+    }
+  }
+});
 
 function showApp(){
   document.getElementById("auth-section").style.display="none";
-  document.getElementById("dashboard-interface").style.display="block"; // show main dashboard interface
+  document.getElementById("dashboard-interface").style.display="block";
   document.getElementById("menu-btn").style.display="block";
   loadOrders();
 }
@@ -351,7 +367,7 @@ function saveOrder(ref){
 }
 
 function loadOrders(){
-  if(currentUser.uid==="guest") return;
+  if(!currentUser) return;
   const list=document.getElementById("orders-list");
   db.collection("orders").where("userId","==",currentUser.uid)
     .orderBy("timestamp","desc")
