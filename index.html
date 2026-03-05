@@ -328,6 +328,7 @@ function signup(){const email=document.getElementById("email").value;const passw
 function login(){const email=document.getElementById("email").value;const password=document.getElementById("password").value;auth.signInWithEmailAndPassword(email,password).then(user=>{currentUser=user.user;showApp();}).catch(err=>document.getElementById("auth-msg").innerText=err.message);}
 function continueGuest(){const phone=document.getElementById("phone").value || "guest";currentUser={uid:"guest",email:phone+"@guest.com"};showApp();}
 function logout(){auth.signOut();location.reload();}
+
 function showApp(){
   document.getElementById("auth-section").style.display="none";
   document.getElementById("network-section").style.display="flex"; // show network selection immediately
@@ -435,25 +436,19 @@ function sendAIMessage(){
   input.value="";
   messages.scrollTop=messages.scrollHeight;
 
-  // Simple AI response inline with user message
+  // AI inline response depending on user message
   setTimeout(()=>{
     const aiMsg=document.createElement("div");
     aiMsg.style.textAlign="left";
     aiMsg.style.margin="5px 0";
-    // Basic responses depending on keywords
-    let reply="AI: Please be patient, we are checking your request.";
-    if(msg.toLowerCase().includes("help")) reply="AI: How may I help you today?";
-    else if(msg.toLowerCase().includes("mt")) reply="AI: You selected MTN, please choose your bundle.";
+    let reply="AI: How may I help you today?";
+    if(msg.toLowerCase().includes("mtn")) reply="AI: You selected MTN, please choose your bundle.";
     else if(msg.toLowerCase().includes("vodafone")) reply="AI: You selected Vodafone, please choose your bundle.";
     else if(msg.toLowerCase().includes("price")) reply="AI: You can see the prices next to each bundle size.";
     else if(msg.toLowerCase().includes("pay")) reply="AI: Please proceed with payment using the 'Pay Now' button.";
     else if(msg.toLowerCase().includes("order")) reply="AI: You can view your orders by clicking the menu and selecting 'My Orders'.";
-    messages.appendChild(document.createTextNode(""));
-    const div=document.createElement("div");
-    div.style.textAlign="left";
-    div.style.margin="5px 0";
-    div.innerText=reply;
-    messages.appendChild(div);
+    aiMsg.innerText=reply;
+    messages.appendChild(aiMsg);
     messages.scrollTop=messages.scrollHeight;
   },1000);
 }
