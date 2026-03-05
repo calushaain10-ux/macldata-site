@@ -203,7 +203,7 @@ footer{
   <p id="auth-msg"></p>
 </div>
 
-<!-- ================== DASHBOARD INTERFACE ================== -->
+<!-- ================== NETWORK & BUNDLES (VISIBLE AFTER LOGIN/GUEST) ================== -->
 <div id="dashboard-interface" class="section">
   <div class="card-container" id="network-section">
     <div class="card mtn" onclick="selectNetwork('MTN')">MTN Bundles</div>
@@ -249,12 +249,12 @@ footer{
 
 <footer>
 <p><strong>Michael Data Hub</strong></p>
-<p>Contact: 0536571713</p>
+<p>Contact: 053-6576-713</p>
 <p>Email: support@michaeldatahub.com</p>
 <p>Location: Accra, Ghana</p>
 </footer>
 
-<a href="https://wa.me/233536571713" target="_blank" id="whatsapp">WhatsApp</a>
+<a href="https://wa.me/233536576713" target="_blank" id="whatsapp">WhatsApp</a>
 <button id="ai-btn" onclick="toggleAI()">AI</button>
 
 <div id="ai-box">
@@ -295,22 +295,7 @@ const vodafoneBundles=[{size:"5GB",price:23.50},{size:"10GB",price:45.00},{size:
 function signup(){const email=document.getElementById("email").value;const password=document.getElementById("password").value;auth.createUserWithEmailAndPassword(email,password).then(user=>{currentUser=user.user;showApp();}).catch(err=>document.getElementById("auth-msg").innerText=err.message);}
 function login(){const email=document.getElementById("email").value;const password=document.getElementById("password").value;auth.signInWithEmailAndPassword(email,password).then(user=>{currentUser=user.user;showApp();}).catch(err=>document.getElementById("auth-msg").innerText=err.message);}
 function continueGuest(){const phone=document.getElementById("phone").value || "guest";currentUser={uid:"guest",email:phone+"@guest.com"};showApp();}
-function logout(){auth.signOut();localStorage.removeItem("savedUser");location.reload();}
-
-// Keep user logged in
-auth.onAuthStateChanged(user=>{
-  if(user){
-    currentUser=user;
-    localStorage.setItem("savedUser", JSON.stringify({uid:user.uid,email:user.email}));
-    showApp();
-  } else {
-    const saved=localStorage.getItem("savedUser");
-    if(saved){
-      currentUser=JSON.parse(saved);
-      showApp();
-    }
-  }
-});
+function logout(){auth.signOut();location.reload();}
 
 function showApp(){
   document.getElementById("auth-section").style.display="none";
@@ -367,7 +352,7 @@ function saveOrder(ref){
 }
 
 function loadOrders(){
-  if(!currentUser) return;
+  if(currentUser.uid==="guest") return;
   const list=document.getElementById("orders-list");
   db.collection("orders").where("userId","==",currentUser.uid)
     .orderBy("timestamp","desc")
