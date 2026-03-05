@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Michael Data Hub</title>
 
-<!-- ================== STYLES ================== -->
 <style>
 body {
   margin:0;
@@ -109,6 +108,7 @@ footer{
   font-size:28px;
   cursor:pointer;
   z-index:1001;
+  display:none; /* hide initially */
 }
 
 #side-menu{
@@ -209,7 +209,6 @@ footer{
 
 <div id="side-menu">
   <a href="#" onclick="openSection('dashboard-section')">My Orders</a>
-  <a href="#" onclick="openSection('bundle-section')">Buy Data</a>
   <a href="#" onclick="openSection('account-section')">Account Settings</a>
   <a href="#" onclick="logout()">Logout</a>
 </div>
@@ -291,12 +290,9 @@ footer{
   </div>
 </div>
 
-<!-- ================= FIREBASE ================== -->
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-
-<!-- ================= PAYSTACK ================== -->
 <script src="https://js.paystack.co/v1/inline.js"></script>
 
 <script>
@@ -332,7 +328,12 @@ function signup(){const email=document.getElementById("email").value;const passw
 function login(){const email=document.getElementById("email").value;const password=document.getElementById("password").value;auth.signInWithEmailAndPassword(email,password).then(user=>{currentUser=user.user;showApp();}).catch(err=>document.getElementById("auth-msg").innerText=err.message);}
 function continueGuest(){const phone=document.getElementById("phone").value || "guest";currentUser={uid:"guest",email:phone+"@guest.com"};showApp();}
 function logout(){auth.signOut();location.reload();}
-function showApp(){document.getElementById("auth-section").style.display="none";document.getElementById("network-section").style.display="flex";loadOrders();}
+function showApp(){
+  document.getElementById("auth-section").style.display="none";
+  document.getElementById("network-section").style.display="flex";
+  document.getElementById("menu-btn").style.display="block"; // show menu after login
+  loadOrders();
+}
 
 /* ================= BUNDLES ================== */
 function selectNetwork(network){
@@ -417,51 +418,67 @@ document.getElementById("menu-btn").onclick=function(){const menu=document.getEl
 function openSection(id){document.querySelectorAll(".section").forEach(s=>s.style.display="none");document.getElementById(id).style.display="block";document.getElementById("side-menu").style.left="-250px";}
 
 /* ================= AI CHAT ================== */
+let aiState = { step: 0, lastQuestion: "" };
 function toggleAI(){
-  const box=document.getElementById("ai-box");
-  box.style.display=(box.style.display==="flex")?"none":"flex";
+  const box = document.getElementById("ai-box");
+  box.style.display = (box.style.display === "flex") ? "none" : "flex";
 }
 
 function sendAIMessage(){
-  const input=document.getElementById("ai-text");
-  const msg=input.value.trim();
+  const input = document.getElementById("ai-text");
+  const msg = input.value.trim();
   if(!msg) return;
-  const messages=document.getElementById("ai-messages");
-  const userMsg=document.createElement("div");
-  userMsg.style.textAlign="right";
-  userMsg.style.margin="5px 0";
-  userMsg.innerText="You: "+msg;
-  messages.appendChild(userMsg);
-  input.value="";
-  messages.scrollTop=messages.scrollHeight;
 
-  // AI asks series of questions
-  const aiQuestions=[
-    "AI: Hello! How may I assist you today?",
-    "AI: Can you provide your phone number?",
-    "AI: Which network are you using? MTN or Vodafone?",
-    "AI: Which bundle size are you trying to purchase?",
-    "AI: Have you tried purchasing before?",
-    "AI: Are you facing a payment issue?",
-    "AI: Do you want a delivery time estimate?",
-    "AI: Can you provide the reference number if any?",
-    "AI: Are you logged in with your correct account?",
-    "AI: Thank you for your patience. We will resolve your request shortly."
-  ];
-  let idx=0;
-  function sendNext(){
-    if(idx>=aiQuestions.length) return;
-    setTimeout(()=>{
-      const aiMsg=document.createElement("div");
-      aiMsg.style.textAlign="left";
-      aiMsg.style.margin="5px 0";
-      aiMsg.innerText=aiQuestions[idx];
-      messages.appendChild(aiMsg);
-      messages.scrollTop=messages.scrollHeight;
-      idx++;
-    }, 1000*(idx+1));
-  }
-  for(let i=0;i<aiQuestions.length;i++){sendNext();}
+  const messages = document.getElementById("ai-messages");
+  const userMsg = document.createElement("div");
+  userMsg.style.textAlign = "right";
+  userMsg.style.margin = "5px 0";
+  userMsg.innerText = "You: " + msg;
+  messages.appendChild(userMsg);
+  input.value = "";
+  messages.scrollTop = messages.scrollHeight;
+
+  setTimeout(()=>{
+    const aiMsg = document.createElement("div");
+    aiMsg.style.textAlign = "left";
+    aiMsg.style.margin = "5px 0";
+
+    // AI responds based on user input
+    if(aiState.step===0){
+      aiMsg.innerText = "AI: Hello! How may I assist you today?";
+      aiState.lastQuestion="assist";
+    }
+    else if(aiState.step===1){
+      if(msg.toLowerCase().includes("bundle") || msg.toLowerCase().includes("buy")){
+        aiMsg.innerText = "AI: Which network are you using? MTN or Vodafone?";
+        aiState.lastQuestion="network";
+      } else if(msg.toLowerCase().includes("payment")){
+        aiMsg.innerText = "AI: Are you facing a payment issue? Please describe.";
+        aiState.lastQuestion="payment";
+      } else {
+        aiMsg.innerText = "AI: Can you provide more details so I can assist?";
+        aiState.lastQuestion="details";
+      }
+    }
+    else if(aiState.step===2){
+      if(aiState.lastQuestion==="network"){
+        aiMsg.innerText = "AI: Noted. Which bundle size are you trying to purchase?";
+        aiState.lastQuestion="bundle";
+      } else if(aiState.lastQuestion==="payment"){
+        aiMsg.innerText = "AI: Thank you. Please ensure your details are correct and try again.";
+        aiState.lastQuestion="end";
+      } else {
+        aiMsg.innerText = "AI: Got it. Is there anything else I can help you with?";
+        aiState.lastQuestion="end";
+      }
+    } else {
+      aiMsg.innerText = "AI: Thank you for your patience. We will resolve your request shortly.";
+    }
+
+    messages.appendChild(aiMsg);
+    messages.scrollTop = messages.scrollHeight;
+    aiState.step++;
+  }, 800);
 }
 </script>
 </body>
