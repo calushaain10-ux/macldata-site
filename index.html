@@ -91,7 +91,7 @@ footer{
   font-size:28px;
   cursor:pointer;
   z-index:1001;
-  display:none;
+  display:block; /* menu visible immediately */
 }
 #side-menu{
   position:fixed;
@@ -175,6 +175,7 @@ footer{
 </style>
 </head>
 <body>
+
 <div id="menu-btn">&#9776;</div>
 <div id="side-menu">
   <a href="#" onclick="openSection('dashboard-section')">My Orders</a>
@@ -196,14 +197,9 @@ footer{
   <p id="auth-msg"></p>
 </div>
 
-<!-- NETWORK & BUNDLES (IMMEDIATE AFTER LOGIN) -->
-<div class="card-container section" id="network-section">
-  <div class="card mtn" onclick="selectNetwork('MTN')">MTN Bundles</div>
-  <div class="card vodafone" onclick="selectNetwork('VODAFONE')">Vodafone Bundles</div>
-</div>
-
+<!-- BUNDLE OPTIONS (IMMEDIATE VISIBILITY AFTER LOGIN) -->
 <div class="section" id="bundle-section">
-  <h3 id="network-title">Select Your Bundle</h3>
+  <h3 id="network-title">All Bundles</h3>
   <select id="bundle-select">
     <option disabled selected>Select bundle option</option>
   </select>
@@ -274,46 +270,29 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 let currentUser = null;
-let selectedNetwork = "";
+
 const mtnBundles=[
 {size:"1GB",price:5.30},{size:"2GB",price:10.20},{size:"3GB",price:14.20},{size:"4GB",price:18.30},{size:"5GB",price:23.00},{size:"6GB",price:27.30},{size:"8GB",price:37.00},{size:"10GB",price:45.00},{size:"15GB",price:65.00},{size:"20GB",price:84.00},{size:"30GB",price:123.00}];
+
 const vodafoneBundles=[
 {size:"5GB",price:23.50},{size:"10GB",price:45.00},{size:"15GB",price:57.00},{size:"20GB",price:72.00},{size:"30GB",price:105.00},{size:"40GB",price:138.00}];
 
-function signup(){
-  const email=document.getElementById("email").value;
-  const password=document.getElementById("password").value;
-  auth.createUserWithEmailAndPassword(email,password)
-  .then(user=>{currentUser=user.user;showApp(true);})
-  .catch(err=>document.getElementById("auth-msg").innerText=err.message);
-}
-function login(){
-  const email=document.getElementById("email").value;
-  const password=document.getElementById("password").value;
-  auth.signInWithEmailAndPassword(email,password)
-  .then(user=>{currentUser=user.user;showApp(true);})
-  .catch(err=>document.getElementById("auth-msg").innerText=err.message);
-}
-function continueGuest(){currentUser={uid:"guest",email:"guest@guest.com"};showApp(true);}
+function signup(){const email=document.getElementById("email").value;const password=document.getElementById("password").value;auth.createUserWithEmailAndPassword(email,password).then(user=>{currentUser=user.user;showApp();}).catch(err=>document.getElementById("auth-msg").innerText=err.message);}
+function login(){const email=document.getElementById("email").value;const password=document.getElementById("password").value;auth.signInWithEmailAndPassword(email,password).then(user=>{currentUser=user.user;showApp();}).catch(err=>document.getElementById("auth-msg").innerText=err.message);}
+function continueGuest(){currentUser={uid:"guest",email:"guest@guest.com"};showApp();}
 function logout(){auth.signOut();location.reload();}
 
-function showApp(showBundles=false){
+function showApp(){
   document.getElementById("auth-section").style.display="none";
-  document.getElementById("network-section").style.display="flex";
-  document.getElementById("bundle-section").style.display=showBundles?"block":"none";
-  document.getElementById("menu-btn").style.display="block";
-  if(showBundles && !selectedNetwork) selectNetwork("MTN");
+  document.getElementById("bundle-section").style.display="block";
+  populateBundles();
   loadOrders();
 }
 
-function selectNetwork(network){
-  selectedNetwork=network;
-  document.getElementById("bundle-section").style.display="block";
-  document.getElementById("network-title").innerText=network+" Bundles";
+function populateBundles(){
   const select=document.getElementById("bundle-select");
   select.innerHTML='<option disabled selected>Select bundle option</option>';
-  const bundles=network==="MTN"?mtnBundles:vodafoneBundles;
-  bundles.forEach(b=>{
+  [...mtnBundles,...vodafoneBundles].forEach(b=>{
     const option=document.createElement("option");
     option.value=b.price;
     option.text=b.size+" - GHC "+b.price.toFixed(2);
@@ -342,7 +321,6 @@ function saveOrder(ref){
   if(currentUser.uid==="guest") return;
   db.collection("orders").add({
     userId:currentUser.uid,
-    network:selectedNetwork,
     bundle:document.getElementById("bundle-select").selectedOptions[0].text,
     phone:document.getElementById("phone").value,
     reference:ref,
@@ -354,18 +332,18 @@ function loadOrders(){
   if(currentUser.uid==="guest") return;
   openSection('dashboard-section');
   db.collection("orders").where("userId","==",currentUser.uid)
-  .orderBy("timestamp","desc")
-  .onSnapshot(snapshot=>{
-    const list=document.getElementById("orders-list");
-    list.innerHTML="";
-    if(snapshot.empty){const li=document.createElement("li");li.innerText="No orders yet.";list.appendChild(li);}
-    else {snapshot.forEach(doc=>{const data=doc.data();const li=document.createElement("li");const time=data.timestamp?new Date(data.timestamp.seconds*1000).toLocaleString():"Pending";li.innerText=`${data.bundle} - ${data.network} | Number: ${data.phone} | Time: ${time}`;list.appendChild(li);});}
-  });
+    .orderBy("timestamp","desc")
+    .onSnapshot(snapshot=>{
+      const list=document.getElementById("orders-list");
+      list.innerHTML="";
+      if(snapshot.empty){const li=document.createElement("li");li.innerText="No orders yet.";list.appendChild(li);}
+      else snapshot.forEach(doc=>{const data=doc.data();const li=document.createElement("li");const time=data.timestamp?new Date(data.timestamp.seconds*1000).toLocaleString():"Pending";li.innerText=`${data.bundle} | Number: ${data.phone} | Time: ${time}`;list.appendChild(li);});
+    });
 }
-
 function refreshOrders(){ loadOrders(); }
 function changeEmail(){const newEmail=document.getElementById("new-email").value;if(currentUser && newEmail){currentUser.updateEmail(newEmail).then(()=>alert("Email changed successfully")).catch(err=>alert(err.message));}}
 function changePassword(){const newPassword=document.getElementById("new-password").value;if(currentUser && newPassword){currentUser.updatePassword(newPassword).then(()=>alert("Password changed successfully")).catch(err=>alert(err.message));}}
+
 document.getElementById("menu-btn").onclick=function(){const menu=document.getElementById("side-menu");menu.style.left=(menu.style.left=="0px"?"-250px":"0px");}
 function openSection(id){document.querySelectorAll(".section").forEach(s=>s.style.display="none");document.getElementById(id).style.display="block";document.getElementById("side-menu").style.left="-250px";}
 
@@ -385,21 +363,20 @@ function sendAIMessage(){
   messages.appendChild(userMsg);
   input.value="";
   messages.scrollTop=messages.scrollHeight;
-
   setTimeout(()=>{
     const aiMsg=document.createElement("div");
     aiMsg.style.textAlign="left";
     aiMsg.style.margin="5px 0";
     let reply="AI: How may I help you today?";
-    if(msg.toLowerCase().includes("mtn")) reply="AI: You selected MTN, please choose your bundle.";
-    else if(msg.toLowerCase().includes("vodafone")) reply="AI: You selected Vodafone, please choose your bundle.";
-    else if(msg.toLowerCase().includes("price")) reply="AI: You can see the prices next to each bundle size.";
-    else if(msg.toLowerCase().includes("pay")) reply="AI: Please proceed with payment using the 'Pay Now' button.";
-    else if(msg.toLowerCase().includes("order")) reply="AI: You can view your orders by clicking the menu and selecting 'My Orders'.";
+    if(msg.toLowerCase().includes("mtn")) reply="AI: MTN bundles are available in the list.";
+    else if(msg.toLowerCase().includes("vodafone")) reply="AI: Vodafone bundles are available in the list.";
+    else if(msg.toLowerCase().includes("price")) reply="AI: Prices are shown next to each bundle.";
+    else if(msg.toLowerCase().includes("pay")) reply="AI: Click 'Pay Now' to complete your payment.";
+    else if(msg.toLowerCase().includes("order")) reply="AI: Check 'My Orders' in the menu.";
     aiMsg.innerText=reply;
     messages.appendChild(aiMsg);
     messages.scrollTop=messages.scrollHeight;
-  },1000);
+  },500);
 }
 </script>
 </body>
