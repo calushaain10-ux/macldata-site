@@ -234,7 +234,7 @@ footer{
   <div class="card vodafone" onclick="selectNetwork('VODAFONE')">Vodafone Bundles</div>
 </div>
 
-<!-- ================== BUNDLES SELECTION ================== -->
+<!-- ================== BUNDLES SELECTION (VISIBLE AFTER NETWORK CLICK OR IMMEDIATE) ================== -->
 <div class="section" id="bundle-section">
   <h3 id="network-title"></h3>
   <select id="bundle-select">
@@ -324,23 +324,53 @@ const vodafoneBundles=[
 {size:"20GB",price:72.00},{size:"30GB",price:105.00},{size:"40GB",price:138.00}];
 
 /* ================= AUTH ================== */
-function signup(){const email=document.getElementById("email").value;const password=document.getElementById("password").value;auth.createUserWithEmailAndPassword(email,password).then(user=>{currentUser=user.user;showApp();}).catch(err=>document.getElementById("auth-msg").innerText=err.message);}
-function login(){const email=document.getElementById("email").value;const password=document.getElementById("password").value;auth.signInWithEmailAndPassword(email,password).then(user=>{currentUser=user.user;showApp();}).catch(err=>document.getElementById("auth-msg").innerText=err.message);}
-function continueGuest(){const phone=document.getElementById("phone").value || "guest";currentUser={uid:"guest",email:phone+"@guest.com"};showApp();}
+function signup(){
+  const email=document.getElementById("email").value;
+  const password=document.getElementById("password").value;
+  auth.createUserWithEmailAndPassword(email,password)
+    .then(user=>{
+      currentUser=user.user;
+      showApp(true); // <-- pass true to immediately show bundles
+    })
+    .catch(err=>document.getElementById("auth-msg").innerText=err.message);
+}
+
+function login(){
+  const email=document.getElementById("email").value;
+  const password=document.getElementById("password").value;
+  auth.signInWithEmailAndPassword(email,password)
+    .then(user=>{
+      currentUser=user.user;
+      showApp(true); // <-- pass true to immediately show bundles
+    })
+    .catch(err=>document.getElementById("auth-msg").innerText=err.message);
+}
+
+function continueGuest(){
+  const phone=document.getElementById("phone").value || "guest";
+  currentUser={uid:"guest",email:phone+"@guest.com"};
+  showApp(true);
+}
+
 function logout(){auth.signOut();location.reload();}
 
-function showApp(){
+/* ================= SHOW APP ================== */
+function showApp(showBundles=false){
   document.getElementById("auth-section").style.display="none";
-  document.getElementById("network-section").style.display="flex"; // show network selection immediately
-  document.getElementById("bundle-section").style.display="none"; // hide bundles until a network is clicked
+  document.getElementById("network-section").style.display="flex"; // show network selection
   document.getElementById("menu-btn").style.display="block"; // show menu
+  document.getElementById("bundle-section").style.display=showBundles?"block":"none"; // show bundles if flag true
+  if(showBundles && !selectedNetwork) {
+    // automatically show MTN bundles as default if no network selected
+    selectNetwork("MTN");
+  }
   loadOrders();
 }
 
 /* ================= BUNDLES ================== */
 function selectNetwork(network){
   selectedNetwork=network;
-  document.getElementById("bundle-section").style.display="block"; // show bundles
+  document.getElementById("bundle-section").style.display="block"; // always show bundle section
   document.getElementById("network-title").innerText=network+" Bundles";
   const select=document.getElementById("bundle-select");
   select.innerHTML='<option disabled selected>Select bundle option</option>';
@@ -436,7 +466,6 @@ function sendAIMessage(){
   input.value="";
   messages.scrollTop=messages.scrollHeight;
 
-  // AI inline response depending on user message
   setTimeout(()=>{
     const aiMsg=document.createElement("div");
     aiMsg.style.textAlign="left";
