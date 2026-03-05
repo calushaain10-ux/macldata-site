@@ -228,13 +228,13 @@ footer{
   <p id="auth-msg"></p>
 </div>
 
-<!-- ================== NETWORK ================== -->
+<!-- ================== NETWORK SELECTION (VISIBLE AFTER LOGIN/GUEST) ================== -->
 <div class="card-container section" id="network-section">
   <div class="card mtn" onclick="selectNetwork('MTN')">MTN Bundles</div>
   <div class="card vodafone" onclick="selectNetwork('VODAFONE')">Vodafone Bundles</div>
 </div>
 
-<!-- ================== BUNDLES ================== -->
+<!-- ================== BUNDLES SELECTION ================== -->
 <div class="section" id="bundle-section">
   <h3 id="network-title"></h3>
   <select id="bundle-select">
@@ -330,17 +330,17 @@ function continueGuest(){const phone=document.getElementById("phone").value || "
 function logout(){auth.signOut();location.reload();}
 function showApp(){
   document.getElementById("auth-section").style.display="none";
-  document.getElementById("network-section").style.display="flex";
-  document.getElementById("menu-btn").style.display="block"; // show menu after login
+  document.getElementById("network-section").style.display="flex"; // show network selection immediately
+  document.getElementById("bundle-section").style.display="none"; // hide bundles until a network is clicked
+  document.getElementById("menu-btn").style.display="block"; // show menu
   loadOrders();
 }
 
 /* ================= BUNDLES ================== */
 function selectNetwork(network){
   selectedNetwork=network;
-  openSection('bundle-section');
+  document.getElementById("bundle-section").style.display="block"; // show bundles
   document.getElementById("network-title").innerText=network+" Bundles";
-
   const select=document.getElementById("bundle-select");
   select.innerHTML='<option disabled selected>Select bundle option</option>';
   const bundles=network==="MTN"?mtnBundles:vodafoneBundles;
@@ -357,7 +357,6 @@ function pay(){
   const bundleSelect=document.getElementById("bundle-select");
   const amount=bundleSelect.value*100;
   if(!amount){alert("Select bundle first");return;}
-
   let handler=PaystackPop.setup({
     key:'pk_test_8f766e087751fca611df11cfe5ae5c86ece075ee',
     email:currentUser.email,
@@ -418,67 +417,45 @@ document.getElementById("menu-btn").onclick=function(){const menu=document.getEl
 function openSection(id){document.querySelectorAll(".section").forEach(s=>s.style.display="none");document.getElementById(id).style.display="block";document.getElementById("side-menu").style.left="-250px";}
 
 /* ================= AI CHAT ================== */
-let aiState = { step: 0, lastQuestion: "" };
 function toggleAI(){
-  const box = document.getElementById("ai-box");
-  box.style.display = (box.style.display === "flex") ? "none" : "flex";
+  const box=document.getElementById("ai-box");
+  box.style.display=(box.style.display==="flex")?"none":"flex";
 }
 
 function sendAIMessage(){
-  const input = document.getElementById("ai-text");
-  const msg = input.value.trim();
+  const input=document.getElementById("ai-text");
+  const msg=input.value.trim();
   if(!msg) return;
-
-  const messages = document.getElementById("ai-messages");
-  const userMsg = document.createElement("div");
-  userMsg.style.textAlign = "right";
-  userMsg.style.margin = "5px 0";
-  userMsg.innerText = "You: " + msg;
+  const messages=document.getElementById("ai-messages");
+  const userMsg=document.createElement("div");
+  userMsg.style.textAlign="right";
+  userMsg.style.margin="5px 0";
+  userMsg.innerText="You: "+msg;
   messages.appendChild(userMsg);
-  input.value = "";
-  messages.scrollTop = messages.scrollHeight;
+  input.value="";
+  messages.scrollTop=messages.scrollHeight;
 
+  // Simple AI response inline with user message
   setTimeout(()=>{
-    const aiMsg = document.createElement("div");
-    aiMsg.style.textAlign = "left";
-    aiMsg.style.margin = "5px 0";
-
-    // AI responds based on user input
-    if(aiState.step===0){
-      aiMsg.innerText = "AI: Hello! How may I assist you today?";
-      aiState.lastQuestion="assist";
-    }
-    else if(aiState.step===1){
-      if(msg.toLowerCase().includes("bundle") || msg.toLowerCase().includes("buy")){
-        aiMsg.innerText = "AI: Which network are you using? MTN or Vodafone?";
-        aiState.lastQuestion="network";
-      } else if(msg.toLowerCase().includes("payment")){
-        aiMsg.innerText = "AI: Are you facing a payment issue? Please describe.";
-        aiState.lastQuestion="payment";
-      } else {
-        aiMsg.innerText = "AI: Can you provide more details so I can assist?";
-        aiState.lastQuestion="details";
-      }
-    }
-    else if(aiState.step===2){
-      if(aiState.lastQuestion==="network"){
-        aiMsg.innerText = "AI: Noted. Which bundle size are you trying to purchase?";
-        aiState.lastQuestion="bundle";
-      } else if(aiState.lastQuestion==="payment"){
-        aiMsg.innerText = "AI: Thank you. Please ensure your details are correct and try again.";
-        aiState.lastQuestion="end";
-      } else {
-        aiMsg.innerText = "AI: Got it. Is there anything else I can help you with?";
-        aiState.lastQuestion="end";
-      }
-    } else {
-      aiMsg.innerText = "AI: Thank you for your patience. We will resolve your request shortly.";
-    }
-
-    messages.appendChild(aiMsg);
-    messages.scrollTop = messages.scrollHeight;
-    aiState.step++;
-  }, 800);
+    const aiMsg=document.createElement("div");
+    aiMsg.style.textAlign="left";
+    aiMsg.style.margin="5px 0";
+    // Basic responses depending on keywords
+    let reply="AI: Please be patient, we are checking your request.";
+    if(msg.toLowerCase().includes("help")) reply="AI: How may I help you today?";
+    else if(msg.toLowerCase().includes("mt")) reply="AI: You selected MTN, please choose your bundle.";
+    else if(msg.toLowerCase().includes("vodafone")) reply="AI: You selected Vodafone, please choose your bundle.";
+    else if(msg.toLowerCase().includes("price")) reply="AI: You can see the prices next to each bundle size.";
+    else if(msg.toLowerCase().includes("pay")) reply="AI: Please proceed with payment using the 'Pay Now' button.";
+    else if(msg.toLowerCase().includes("order")) reply="AI: You can view your orders by clicking the menu and selecting 'My Orders'.";
+    messages.appendChild(document.createTextNode(""));
+    const div=document.createElement("div");
+    div.style.textAlign="left";
+    div.style.margin="5px 0";
+    div.innerText=reply;
+    messages.appendChild(div);
+    messages.scrollTop=messages.scrollHeight;
+  },1000);
 }
 </script>
 </body>
