@@ -5,43 +5,34 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Michael Data Hub</title>
 <style>
-body {
-  margin:0; font-family:Arial, sans-serif; background: linear-gradient(to bottom,#0b3d91,#1e40af,#0f172a); color:white;
-}
-.container{ max-width:900px; margin:auto; padding:20px; text-align:center; position:relative; }
-h1,h3{ margin:10px 0; }
-input, select, button{ padding:10px; margin:5px 0; border-radius:8px; border:none; font-size:16px; }
-button{ background:#10b981; color:white; font-weight:bold; cursor:pointer; transition:0.3s; }
-button:hover{ opacity:0.9; }
-#bundle-select, #phone{ background:black; color:white; font-weight:300; }
-.card-container{ display:flex; justify-content:center; gap:15px; margin:20px 0; }
-.card{ padding:20px; border-radius:15px; cursor:pointer; transition:0.3s; font-weight:bold; text-align:center; }
-.mtn{ background:#FFD700;color:black; }
-.vodafone{ background:#E60000;color:white; }
-.card:hover{ transform:scale(1.05); }
-.section{ display:none; margin-top:20px; text-align:center; }
-.policy-box{ margin-top:30px; padding:15px; font-size:13px; background:rgba(255,255,255,0.1); border-radius:10px; text-align:left; }
-footer{ margin-top:40px; padding:20px; background:black; font-size:14px; text-align:center; }
-#whatsapp{ position:fixed; bottom:15px; right:15px; background:#25D366; color:white; padding:8px 12px; border-radius:50px; font-size:12px; text-decoration:none; font-weight:bold; }
-/* MENU */
-#menu-btn{ position:fixed; top:15px; left:15px; font-size:28px; cursor:pointer; z-index:1001; display:none; }
-#side-menu{ position:fixed; top:0; left:-250px; width:250px; height:100%; background:#111; padding-top:60px; transition:0.3s; z-index:1000; overflow:auto; }
-#side-menu a{ padding:10px 20px; text-decoration:none; display:block; color:white; font-size:16px; transition:0.3s; }
-#side-menu a:hover{ background:#333; }
-/* AI */
-#ai-btn{ position:fixed; bottom:70px; right:15px; background:#6366F1; color:white; border:none; padding:10px; border-radius:50%; font-size:16px; cursor:pointer; z-index:1002; }
-#ai-box{ position:fixed; bottom:120px; right:15px; width:300px; height:300px; background:#1F2937; border-radius:10px; display:none; flex-direction:column; overflow:hidden; box-shadow:0 4px 8px rgba(0,0,0,0.3); z-index:1001; }
-#ai-messages{ flex:1; padding:10px; overflow-y:auto; font-size:14px; }
-#ai-input{ display:flex; border-top:1px solid #333; }
-#ai-input input{ flex:1; padding:8px; border:none; outline:none; font-size:14px; background:#111827; color:white; }
-#ai-input button{ padding:8px 12px; background:#10b981; color:white; border:none; cursor:pointer; }
-/* DASHBOARD */
-#orders-list{ text-align:left; max-height:300px; overflow-y:auto; }
+body { margin:0; font-family:Arial, sans-serif; background: linear-gradient(to bottom,#0b3d91,#1e40af,#0f172a); color:white;}
+.container{ max-width:900px; margin:auto; padding:20px; text-align:center; position:relative;}
+h1,h3{margin:10px 0;}
+input, select, button{ padding:10px; margin:5px 0; border-radius:8px; border:none; font-size:16px;}
+button{ background:#10b981; color:white; font-weight:bold; cursor:pointer; transition:0.3s;}
+button:hover{opacity:0.9;}
+#bundle-select, #phone{ background:black; color:white; font-weight:300;}
+.card-container{ display:flex; justify-content:center; gap:15px; margin:20px 0;}
+.card{ padding:20px; border-radius:15px; cursor:pointer; transition:0.3s; font-weight:bold; text-align:center;}
+.mtn{background:#FFD700;color:black;}
+.vodafone{background:#E60000;color:white;}
+.card:hover{transform:scale(1.05);}
+.section{display:none;margin-top:20px;text-align:center;}
+.policy-box{ margin-top:30px; padding:15px; font-size:13px; background:rgba(255,255,255,0.1); border-radius:10px; text-align:left;}
+footer{ margin-top:40px; padding:20px; background:black; font-size:14px; text-align:center;}
+#whatsapp{ position:fixed; bottom:15px; right:15px; background:#25D366; color:white; padding:8px 12px; border-radius:50px; font-size:12px; text-decoration:none; font-weight:bold;}
+#menu-btn{ position:fixed; top:15px; left:15px; font-size:28px; cursor:pointer; z-index:1001; display:none;}
+#side-menu{ position:fixed; top:0; left:-250px; width:250px; height:100%; background:#111; padding-top:60px; transition:0.3s; z-index:1000; overflow:auto;}
+#side-menu a{ padding:10px 20px; text-decoration:none; display:block; color:white; font-size:16px; transition:0.3s;}
+#side-menu a:hover{background:#333;}
+#ai-btn{ position:fixed; bottom:70px; right:15px; background:#6366F1; color:white; border:none; padding:10px; border-radius:50%; font-size:16px; cursor:pointer; z-index:1002;}
+#ai-box{ position:fixed; bottom:120px; right:15px; width:300px; height:300px; background:#1F2937; border-radius:10px; display:none; flex-direction:column; overflow:hidden; box-shadow:0 4px 8px rgba(0,0,0,0.3); z-index:1001;}
+#ai-messages{ flex:1; padding:10px; overflow-y:auto; font-size:14px;}
+#ai-input{ display:flex; border-top:1px solid #333;}
+#ai-input input{ flex:1; padding:8px; border:none; outline:none; font-size:14px; background:#111827; color:white;}
+#ai-input button{ padding:8px 12px; background:#10b981; color:white; border:none; cursor:pointer;}
+#orders-list{ text-align:left; max-height:300px; overflow-y:auto;}
 </style>
-<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
-<script>
-emailjs.init("9pOwIprzcpJ4p7znn");
-</script>
 </head>
 <body>
 
@@ -73,16 +64,14 @@ emailjs.init("9pOwIprzcpJ4p7znn");
     <div class="card mtn" onclick="selectNetwork('MTN')">MTN Bundles</div>
     <div class="card vodafone" onclick="selectNetwork('VODAFONE')">Vodafone Bundles</div>
   </div>
-
   <div id="bundle-section" style="display:none">
     <h3 id="network-title"></h3>
-    <p>Select bundle amount and enter phone number:</p>
+    <p>Select bundle and enter phone number:</p>
     <select id="bundle-select"><option disabled selected>Select bundle option</option></select>
     <input type="text" id="phone" placeholder="Enter phone number">
     <p style="color:#FFD700;font-size:14px;">Delivery: 10 minutes to 4 hours after payment</p>
     <button onclick="pay()">Pay Now</button>
   </div>
-
   <div id="dashboard-section" style="margin-top:20px;">
     <h3>My Orders</h3>
     <ul id="orders-list"></ul>
@@ -106,7 +95,6 @@ emailjs.init("9pOwIprzcpJ4p7znn");
 <p>• No refund after successful delivery.</p>
 <p>• Ensure the phone number entered is correct before payment.</p>
 </div>
-
 </div>
 
 <footer>
@@ -116,7 +104,7 @@ emailjs.init("9pOwIprzcpJ4p7znn");
 <p>Location: Accra, Ghana</p>
 </footer>
 
-<a href="https://chat.whatsapp.com/LHlJoeh3RJYHvOaExsYox7?mode=gi_t" target="_blank" id="whatsapp">WhatsApp</a>
+<a href="https://chat.whatsapp.com/Es5C5AvDdBMLctjT0hBgwR" target="_blank" id="whatsapp">WhatsApp</a>
 <button id="ai-btn" onclick="toggleAI()">AI</button>
 
 <div id="ai-box">
@@ -127,13 +115,19 @@ emailjs.init("9pOwIprzcpJ4p7znn");
   </div>
 </div>
 
+<!-- SCRIPTS -->
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script>
+emailjs.init("9pOwIprzcpJ4p7znn");
+</script>
+
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 <script src="https://js.paystack.co/v1/inline.js"></script>
 
 <script>
-// Firebase
+// ================= FIREBASE =================
 const firebaseConfig = {
   apiKey: "AIzaSyArIt3zEQuqTfhy908istAqE8eDsRd1AUg",
   authDomain: "michael-data-hub.firebaseapp.com",
@@ -149,15 +143,48 @@ const db = firebase.firestore();
 
 let currentUser = null;
 let selectedNetwork = "";
-const mtnBundles=[{size:"1GB",price:5.30},{size:"2GB",price:10.20},{size:"3GB",price:14.20},{size:"4GB",price:18.30},{size:"5GB",price:23.00},{size:"6GB",price:27.30},{size:"8GB",price:37.00},{size:"10GB",price:45.00},{size:"15GB",price:65.00},{size:"20GB",price:84.00},{size:"30GB",price:123.00}];
-const vodafoneBundles=[{size:"5GB",price:23.50},{size:"10GB",price:45.00},{size:"15GB",price:57.00},{size:"20GB",price:72.00},{size:"30GB",price:105.00},{size:"40GB",price:138.00}];
+const adminEmail = "admin@michaeldatahub.com";
 
-// Auth
-function signup(){const email=document.getElementById("email").value;const password=document.getElementById("password").value;auth.createUserWithEmailAndPassword(email,password).then(user=>{currentUser=user.user;showApp();}).catch(err=>document.getElementById("auth-msg").innerText=err.message);}
-function login(){const email=document.getElementById("email").value;const password=document.getElementById("password").value;auth.signInWithEmailAndPassword(email,password).then(user=>{currentUser=user.user;showApp();}).catch(err=>document.getElementById("auth-msg").innerText=err.message);}
-function continueGuest(){currentUser={uid:"guest",email:"guest@example.com"};showApp();}
-function logout(){auth.signOut();location.reload();}
+const mtnBundles = [
+  {size:"1GB",price:5.30},{size:"2GB",price:10.20},{size:"3GB",price:14.20},
+  {size:"4GB",price:18.30},{size:"5GB",price:23.00},{size:"6GB",price:27.30},
+  {size:"8GB",price:37.00},{size:"10GB",price:45.00},{size:"15GB",price:65.00},
+  {size:"20GB",price:84.00},{size:"30GB",price:123.00}
+];
+const vodafoneBundles = [
+  {size:"5GB",price:23.50},{size:"10GB",price:45.00},{size:"15GB",price:57.00},
+  {size:"20GB",price:72.00},{size:"30GB",price:105.00},{size:"40GB",price:138.00}
+];
 
+// ================= AUTH =================
+function signup(){
+  const email=document.getElementById("email").value;
+  const password=document.getElementById("password").value;
+  auth.createUserWithEmailAndPassword(email,password)
+    .then(user=>{currentUser=user.user; showApp();})
+    .catch(err=>document.getElementById("auth-msg").innerText=err.message);
+}
+
+function login(){
+  const email=document.getElementById("email").value;
+  const password=document.getElementById("password").value;
+  auth.signInWithEmailAndPassword(email,password)
+    .then(user=>{currentUser=user.user; showApp();})
+    .catch(err=>document.getElementById("auth-msg").innerText=err.message);
+}
+
+function continueGuest(){
+  const phone = document.getElementById("phone").value || "guest";
+  currentUser={uid:"guest", email: phone+"@guest.com"};
+  showApp();
+}
+
+function logout(){
+  auth.signOut();
+  location.reload();
+}
+
+// ================= SHOW DASHBOARD =================
 function showApp(){
   document.getElementById("auth-section").style.display="none";
   document.getElementById("dashboard-interface").style.display="block"; 
@@ -165,7 +192,7 @@ function showApp(){
   loadOrders();
 }
 
-// Bundles
+// ================= NETWORK SELECTION =================
 function selectNetwork(network){
   selectedNetwork=network;
   document.getElementById("bundle-section").style.display="block";
@@ -181,82 +208,111 @@ function selectNetwork(network){
   });
 }
 
-// Paystack
-function pay(){
+// ================= PAY & EMAIL =================
+function pay() {
   const bundleSelect=document.getElementById("bundle-select");
+  const phoneInput=document.getElementById("phone").value.trim();
+  const bundleText=bundleSelect.selectedOptions[0]?.text;
   const amount=bundleSelect.value*100;
-  if(!amount){alert("Select bundle first");return;}
-  const phone=document.getElementById("phone").value;
-  if(!phone){alert("Enter phone number");return;}
-  const bundle=bundleSelect.selectedOptions[0].text;
-  const email=currentUser.email || "guest@example.com";
 
-  var handler = PaystackPop.setup({
-    key: 'pk_live_b1c0fad28d842391749607b6e722344203e1cf06',
-    email: email,
-    amount: amount,
+  if(!bundleSelect.value){ alert("Select bundle first"); return; }
+  if(!phoneInput){ alert("Enter phone number"); return; }
+
+  let handler=PaystackPop.setup({
+    key:'pk_test_8f766e087751fca611df11cfe5ae5c86ece075ee',
+    email:currentUser.email || "guest@guest.com",
+    amount:amount,
     currency:'GHS',
-    callback: function(response){
-      saveOrder(response.reference);
+    callback:function(response){
+      // Send email
       emailjs.send("service_qysm6gp","template_3kyca8i",{
-        user_email: email,
-        network: selectedNetwork,
-        bundle: bundle,
-        phone: phone,
-        reference: response.reference
-      }).then(()=>alert("Order sent successfully")).catch(err=>alert("Email failed: "+err));
-      alert("Payment successful! Reference: " + response.reference);
+        to_email:"calushaain10@gmail.com",
+        from_name:"Michael Data Hub",
+        phone:phoneInput,
+        bundle:bundleText,
+        reference:response.reference,
+        user:currentUser.email || "Guest"
+      })
+      .then(()=>alert("Order information sent successfully!"))
+      .catch(err=>{console.error("Email sending failed:", err); alert("Failed to send order info. Check console.");});
+
+      saveOrder(response.reference);
     },
-    onClose: function(){ alert('Payment window closed.'); }
+    onClose:function(){ alert('Payment window closed.'); }
   });
   handler.openIframe();
 }
 
-// Firestore
+// ================= SAVE & LOAD ORDERS =================
 function saveOrder(ref){
-  if(currentUser.uid==="guest") return;
+  if(!currentUser || currentUser.uid==="guest") return;
   db.collection("orders").add({
-    userId:currentUser.uid,
-    network:selectedNetwork,
-    bundle:document.getElementById("bundle-select").selectedOptions[0].text,
-    phone:document.getElementById("phone").value,
-    reference:ref,
-    timestamp:firebase.firestore.FieldValue.serverTimestamp()
-  });
+    userId: currentUser.uid,
+    network: selectedNetwork,
+    bundle: document.getElementById("bundle-select").selectedOptions[0].text,
+    phone: document.getElementById("phone").value,
+    reference: ref,
+    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(()=> loadOrders())
+    .catch(err=>console.error("Firestore save failed:", err));
 }
 
 function loadOrders(){
-  if(currentUser.uid==="guest") return;
   const list=document.getElementById("orders-list");
-  db.collection("orders").where("userId","==",currentUser.uid)
-    .orderBy("timestamp","desc")
-    .onSnapshot(snapshot=>{
-      list.innerHTML="";
-      if(snapshot.empty){
-        const li=document.createElement("li"); li.innerText="No orders yet."; list.appendChild(li);
-      } else {
-        snapshot.forEach(doc=>{
-          const data=doc.data();
-          const li=document.createElement("li");
-          const time=data.timestamp?new Date(data.timestamp.seconds*1000).toLocaleString():"Pending";
-          li.innerText=`${data.bundle} - ${data.network} | Number: ${data.phone} | Time: ${time}`;
-          list.appendChild(li);
-        });
-      }
-    });
+  let query;
+  if(currentUser.email===adminEmail){
+    query = db.collection("orders").orderBy("timestamp","desc"); // admin sees all orders
+  } else {
+    query = db.collection("orders").where("userId","==",currentUser.uid).orderBy("timestamp","desc"); // user sees own orders
+  }
+  query.onSnapshot(snapshot=>{
+    list.innerHTML="";
+    if(snapshot.empty){
+      const li=document.createElement("li");
+      li.innerText="No orders yet.";
+      list.appendChild(li);
+    } else {
+      snapshot.forEach(doc=>{
+        const data=doc.data();
+        const li=document.createElement("li");
+        const time=data.timestamp?new Date(data.timestamp.seconds*1000).toLocaleString():"Pending";
+        li.innerText=`${data.bundle} - ${data.network} | Number: ${data.phone} | Time: ${time} | User: ${data.userId}`;
+        list.appendChild(li);
+      });
+    }
+  });
 }
 
 function refreshOrders(){ loadOrders(); }
 
-// Account
-function changeEmail(){const newEmail=document.getElementById("new-email").value;if(currentUser && newEmail){currentUser.updateEmail(newEmail).then(()=>alert("Email changed successfully")).catch(err=>alert(err.message));}}
-function changePassword(){const newPassword=document.getElementById("new-password").value;if(currentUser && newPassword){currentUser.updatePassword(newPassword).then(()=>alert("Password changed successfully")).catch(err=>alert(err.message));}}
+// ================= ACCOUNT =================
+function changeEmail(){
+  const newEmail=document.getElementById("new-email").value;
+  if(currentUser && newEmail){
+    currentUser.updateEmail(newEmail).then(()=>alert("Email changed successfully"))
+    .catch(err=>alert(err.message));
+  }
+}
+function changePassword(){
+  const newPassword=document.getElementById("new-password").value;
+  if(currentUser && newPassword){
+    currentUser.updatePassword(newPassword).then(()=>alert("Password changed successfully"))
+    .catch(err=>alert(err.message));
+  }
+}
 
-// Menu
-document.getElementById("menu-btn").onclick=function(){const menu=document.getElementById("side-menu");menu.style.left=(menu.style.left=="0px"?"-250px":"0px");}
-function openSection(id){document.querySelectorAll(".section").forEach(s=>s.style.display="none");document.getElementById(id).style.display="block";document.getElementById("side-menu").style.left="-250px";}
+// ================= MENU =================
+document.getElementById("menu-btn").onclick=function(){
+  const menu=document.getElementById("side-menu");
+  menu.style.left=(menu.style.left=="0px"?"-250px":"0px");
+}
+function openSection(id){
+  document.querySelectorAll(".section").forEach(s=>s.style.display="none");
+  document.getElementById(id).style.display="block";
+  document.getElementById("side-menu").style.left="-250px";
+}
 
-// AI
+// ================= AI =================
 function toggleAI(){
   const box=document.getElementById("ai-box");
   box.style.display=(box.style.display==="flex")?"none":"flex";
@@ -264,23 +320,34 @@ function toggleAI(){
   if(messages.innerHTML===""){
     const initMsg=document.createElement("div");
     initMsg.style.margin="5px 0";
-    initMsg.innerHTML=`Hello! For any issues, email <a href="mailto:Mac.calusha10@gmail.com" style="color:#10b981;">Mac.calusha10@gmail.com</a>`;
+    initMsg.innerHTML=`Hello! For any issues, send your message to <a href="mailto:Mac.calusha10@gmail.com" style="color:#10b981;">Mac.calusha10@gmail.com</a>`;
     messages.appendChild(initMsg);
   }
 }
 function sendAIMessage(){
-  const input=document.getElementById("ai-text"); const msg=input.value.trim();
+  const input=document.getElementById("ai-text");
+  const msg=input.value.trim();
   if(!msg) return;
   const messages=document.getElementById("ai-messages");
-  const userMsg=document.createElement("div"); userMsg.style.textAlign="right"; userMsg.style.margin="5px 0"; userMsg.innerText="You: "+msg; messages.appendChild(userMsg);
+  const userMsg=document.createElement("div");
+  userMsg.style.textAlign="right"; userMsg.style.margin="5px 0";
+  userMsg.innerText="You: "+msg;
+  messages.appendChild(userMsg);
   input.value=""; messages.scrollTop=messages.scrollHeight;
+
   setTimeout(()=>{
-    const aiMsg=document.createElement("div"); aiMsg.style.textAlign="left"; aiMsg.style.margin="5px 0";
-    let reply="AI: Please email <a href='mailto:Mac.calusha10@gmail.com' style='color:#10b981;'>Mac.calusha10@gmail.com</a>";
-    aiMsg.innerHTML=reply; messages.appendChild(aiMsg); messages.scrollTop=messages.scrollHeight;
+    const aiMsg=document.createElement("div");
+    aiMsg.style.textAlign="left"; aiMsg.style.margin="5px 0";
+    let reply="AI: I'm not sure about that. Please contact <a href='mailto:Mac.calusha10@gmail.com' style='color:#10b981;'>Mac.calusha10@gmail.com</a>";
+    if(msg.toLowerCase().includes("mtn")) reply="AI: You selected MTN, choose your bundle from the dashboard.";
+    else if(msg.toLowerCase().includes("vodafone")) reply="AI: You selected Vodafone, choose your bundle from the dashboard.";
+    else if(msg.toLowerCase().includes("price")) reply="AI: Prices are shown next to each bundle in the dropdown.";
+    else if(msg.toLowerCase().includes("pay")) reply="AI: Click the 'Pay Now' button to proceed.";
+    else if(msg.toLowerCase().includes("order")) reply="AI: View orders from the menu -> My Orders.";
+    aiMsg.innerHTML=reply; messages.appendChild(aiMsg);
+    messages.scrollTop=messages.scrollHeight;
   },800);
 }
 </script>
-
 </body>
 </html>
