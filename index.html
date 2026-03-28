@@ -1,13 +1,6 @@
-<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
-
-<script>
-(function(){
-  emailjs.init("9pOwIprzcpJ4p7znn");
-})();
 </script><!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
+<head><script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script> emailjs.init("9pOwIprzcpJ4p7znn");<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Michael Data Hub</title>
 <style>
@@ -342,26 +335,14 @@ function pay(){
     currency:'GHS',
      callback:function(response){
   const phone = document.getElementById("phone").value;
-  const bundle = document.getElementById("bundle-select").selectedOptions[0].text;
-  const user = auth.currentUser ? auth.currentUser.email : "Guest";
+const bundle = document.getElementById("bundle-select").selectedOptions[0].text;
+const user = auth.currentUser ? auth.currentUser.email : "Guest";
 
-  // Keep your existing save function
-  saveOrder(response.reference);
-
-  // SEND EMAIL TO YOU AUTOMATICALLY
-  emailjs.send("YOUR_SERVICE_ID","YOUR_TEMPLATE_ID",{
-    phone: phone,
-    bundle: bundle,
-    reference: response.reference,
-    user: user
-  })
-  .then(function(){
-    alert("✅ Payment successful! Order sent to admin.");
-  })
-  .catch(function(error){
-    alert("⚠️ Payment done but email failed: " + error.text);
-  });
-}
+emailjs.send("service_qysm6gp","template_grtoand",{
+  phone: phone,
+  bundle: bundle,
+  reference: response.reference,
+  user: user
   });
   handler.openIframe();
 }
