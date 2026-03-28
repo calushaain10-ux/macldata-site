@@ -179,6 +179,7 @@ footer{
 </head>
 <body>
 
+<!-- EmailJS -->
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 <script>
 (function(){
@@ -200,7 +201,7 @@ footer{
 <h1>Michael Data Hub</h1>
 <p>Affordable MTN & Vodafone Data Bundles in Ghana</p>
 
-<!-- ================= AUTH ================== -->
+<!-- AUTH SECTION -->
 <div id="auth-section" class="section" style="display:block;">
   <input type="email" id="email" placeholder="Enter Email">
   <input type="password" id="password" placeholder="Enter Password">
@@ -210,7 +211,7 @@ footer{
   <p id="auth-msg"></p>
 </div>
 
-<!-- ================== DASHBOARD INTERFACE ================== -->
+<!-- DASHBOARD -->
 <div id="dashboard-interface" class="section">
 
   <!-- NETWORK CARDS -->
@@ -239,7 +240,7 @@ footer{
   </div>
 </div>
 
-<!-- ================= ACCOUNT ================== -->
+<!-- ACCOUNT -->
 <div class="section" id="account-section">
 <h3>Account Settings</h3>
 <input type="email" id="new-email" placeholder="New Email">
@@ -276,6 +277,7 @@ footer{
   </div>
 </div>
 
+<!-- Firebase & Paystack -->
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
@@ -302,10 +304,10 @@ let selectedNetwork = "";
 const mtnBundles=[{size:"1GB",price:5.30},{size:"2GB",price:10.20},{size:"3GB",price:14.20},{size:"4GB",price:18.30},{size:"5GB",price:23.00},{size:"6GB",price:27.30},{size:"8GB",price:37.00},{size:"10GB",price:45.00},{size:"15GB",price:65.00},{size:"20GB",price:84.00},{size:"30GB",price:123.00}];
 const vodafoneBundles=[{size:"5GB",price:23.50},{size:"10GB",price:45.00},{size:"15GB",price:57.00},{size:"20GB",price:72.00},{size:"30GB",price:105.00},{size:"40GB",price:138.00}];
 
-// Auth functions
+// AUTH FUNCTIONS
 function signup(){const email=document.getElementById("email").value;const password=document.getElementById("password").value;auth.createUserWithEmailAndPassword(email,password).then(user=>{currentUser=user.user;showApp();}).catch(err=>document.getElementById("auth-msg").innerText=err.message);}
 function login(){const email=document.getElementById("email").value;const password=document.getElementById("password").value;auth.signInWithEmailAndPassword(email,password).then(user=>{currentUser=user.user;showApp();}).catch(err=>document.getElementById("auth-msg").innerText=err.message);}
-function continueGuest(){const phone=document.getElementById("phone").value || "guest";currentUser={uid:"guest",email:phone+"@guest.com"};showApp();}
+function continueGuest(){currentUser={uid:"guest",email:"guest@guest.com"};showApp();}
 function logout(){auth.signOut();location.reload();}
 
 function showApp(){
@@ -315,7 +317,7 @@ function showApp(){
   loadOrders();
 }
 
-// Bundles
+// NETWORK SELECTION
 function selectNetwork(network){
   selectedNetwork=network;
   document.getElementById("bundle-section").style.display="block";
@@ -331,41 +333,40 @@ function selectNetwork(network){
   });
 }
 
-// Pay
-function pay() {
-  const bundleSelect = document.getElementById("bundle-select");
-  const amount = bundleSelect.value * 100;
-  if (!amount) { alert("Select bundle first"); return; }
+// PAYMENT
+function pay(){
+  const bundleSelect=document.getElementById("bundle-select");
+  const amount=bundleSelect.value*100;
+  if(!amount){alert("Select bundle first");return;}
 
-  let handler = PaystackPop.setup({
-    key: 'pk_test_8f766e087751fca611df11cfe5ae5c86ece075ee',
-    email: currentUser.email,
-    amount: amount,
-    currency: 'GHS',
-    callback: function(response) {
-      const phone = document.getElementById("phone").value;
-      const bundle = document.getElementById("bundle-select").selectedOptions[0].text;
-      const user = auth.currentUser ? auth.currentUser.email : "Guest";
+  let handler=PaystackPop.setup({
+    key:'pk_test_8f766e087751fca611df11cfe5ae5c86ece075ee',
+    email:currentUser.email,
+    amount:amount,
+    currency:'GHS',
+    callback:function(response){
+      const phone=document.getElementById("phone").value;
+      const bundle=document.getElementById("bundle-select").selectedOptions[0].text;
+      const user=currentUser.email;
 
-      emailjs.send("service_qysm6gp", "template_grtoand", {
-        phone: phone,
-        bundle: bundle,
-        reference: response.reference,
-        user: user
-      });
+      // Send info via EmailJS to YOU
+      emailjs.send("service_qysm6gp","template_grtoand",{
+        to_email:"your.email@example.com",
+        phone:phone,
+        bundle:bundle,
+        reference:response.reference,
+        user:user
+      }).then(()=>alert("Payment successful! Info sent to you."))
+      .catch(err=>{console.error(err);alert("Payment successful! But sending info failed.")});
 
       saveOrder(response.reference);
-      alert("Payment successful! Reference: " + response.reference);
     },
-    onClose: function() {
-      alert('Payment was not completed.');
-    }
+    onClose:function(){alert('Payment was not completed.');}
   });
-
   handler.openIframe();
 }
 
-// Orders
+// SAVE & LOAD ORDERS
 function saveOrder(ref){
   if(currentUser.uid==="guest") return;
   db.collection("orders").add({
@@ -377,7 +378,6 @@ function saveOrder(ref){
     timestamp:firebase.firestore.FieldValue.serverTimestamp()
   });
 }
-
 function loadOrders(){
   if(currentUser.uid==="guest") return;
   const list=document.getElementById("orders-list");
@@ -402,61 +402,50 @@ function loadOrders(){
 }
 function refreshOrders(){ loadOrders(); }
 
-// Account
+// ACCOUNT
 function changeEmail(){const newEmail=document.getElementById("new-email").value;if(currentUser && newEmail){currentUser.updateEmail(newEmail).then(()=>alert("Email changed successfully")).catch(err=>alert(err.message));}}
 function changePassword(){const newPassword=document.getElementById("new-password").value;if(currentUser && newPassword){currentUser.updatePassword(newPassword).then(()=>alert("Password changed successfully")).catch(err=>alert(err.message));}}
 
-// Menu
+// MENU
 document.getElementById("menu-btn").onclick=function(){const menu=document.getElementById("side-menu");menu.style.left=(menu.style.left=="0px"?"-250px":"0px");}
 function openSection(id){document.querySelectorAll(".section").forEach(s=>s.style.display="none");document.getElementById(id).style.display="block";document.getElementById("side-menu").style.left="-250px";}
 
-// AI
+// AI CHAT
 function toggleAI(){
   const box=document.getElementById("ai-box");
   box.style.display=(box.style.display==="flex")?"none":"flex";
-
-  // Show the initial email message only when AI opens
   const messages=document.getElementById("ai-messages");
   if(messages.innerHTML===""){
     const initMsg=document.createElement("div");
     initMsg.style.margin="5px 0";
-    initMsg.innerHTML=`Hello! For any issues or questions, please send your message to <a href="mailto:Mac.calusha10@gmail.com" style="color:#10b981;">Mac.calusha10@gmail.com</a>`;
+    initMsg.innerHTML=`Hello! For any issues, please email <a href="mailto:Mac.calusha10@gmail.com" style="color:#10b981;">Mac.calusha10@gmail.com</a>`;
     messages.appendChild(initMsg);
   }
 }
-
 function sendAIMessage(){
   const input=document.getElementById("ai-text");
   const msg=input.value.trim();
   if(!msg) return;
   const messages=document.getElementById("ai-messages");
   const userMsg=document.createElement("div");
-  userMsg.style.textAlign="right";
-  userMsg.style.margin="5px 0";
+  userMsg.style.textAlign="right"; userMsg.style.margin="5px 0";
   userMsg.innerText="You: "+msg;
-  messages.appendChild(userMsg);
-  input.value="";
-  messages.scrollTop=messages.scrollHeight;
+  messages.appendChild(userMsg); input.value=""; messages.scrollTop=messages.scrollHeight;
 
   setTimeout(()=>{
     const aiMsg=document.createElement("div");
-    aiMsg.style.textAlign="left";
-    aiMsg.style.margin="5px 0";
-    let reply="AI: I'm not sure about that. Please send your question to <a href='mailto:Mac.calusha10@gmail.com' style='color:#10b981;'>Mac.calusha10@gmail.com</a>";
-    
-    // Contextual replies
-    if(msg.toLowerCase().includes("mtn")) reply="AI: You selected MTN, please choose your bundle from the dashboard.";
-    else if(msg.toLowerCase().includes("vodafone")) reply="AI: You selected Vodafone, please choose your bundle from the dashboard.";
-    else if(msg.toLowerCase().includes("price")) reply="AI: You can see the prices next to each bundle size in the bundle dropdown.";
-    else if(msg.toLowerCase().includes("pay")) reply="AI: Please proceed with payment using the 'Pay Now' button.";
-    else if(msg.toLowerCase().includes("order")) reply="AI: You can view your orders by clicking the menu and selecting 'My Orders'.";
-
+    aiMsg.style.textAlign="left"; aiMsg.style.margin="5px 0";
+    let reply="AI: Please contact <a href='mailto:Mac.calusha10@gmail.com' style='color:#10b981;'>Mac.calusha10@gmail.com</a>";
+    if(msg.toLowerCase().includes("mtn")) reply="AI: You selected MTN, please choose your bundle from dashboard.";
+    else if(msg.toLowerCase().includes("vodafone")) reply="AI: You selected Vodafone, please choose your bundle from dashboard.";
+    else if(msg.toLowerCase().includes("price")) reply="AI: Prices are shown next to bundle sizes.";
+    else if(msg.toLowerCase().includes("pay")) reply="AI: Click 'Pay Now' to proceed.";
+    else if(msg.toLowerCase().includes("order")) reply="AI: View your orders in the menu.";
     aiMsg.innerHTML=reply;
     messages.appendChild(aiMsg);
     messages.scrollTop=messages.scrollHeight;
   },800);
 }
 </script>
-
 </body>
 </html>
