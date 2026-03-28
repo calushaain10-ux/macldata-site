@@ -1,12 +1,7 @@
-<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
-
-<script>
-(function(){
-  emailjs.init("9pOwIprzcpJ4p7znn");
-})();
-</script></script><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
-<head><meta charset="UTF-8">
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Michael Data Hub</title>
 <style>
@@ -184,6 +179,13 @@ footer{
 </head>
 <body>
 
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script>
+(function(){
+  emailjs.init("9pOwIprzcpJ4p7znn");
+})();
+</script>
+
 <div id="menu-btn">&#9776;</div>
 
 <div id="side-menu">
@@ -263,7 +265,7 @@ footer{
 <p>Location: Accra, Ghana</p>
 </footer>
 
-<a href="https://chat.whatsapp.com/LHlJoeh3RJYHvOaExsYox7?mode=gi_t target="_blank" id="whatsapp">WhatsApp</a>
+<a href="https://chat.whatsapp.com/LHlJoeh3RJYHvOaExsYox7?mode=gi_t" target="_blank" id="whatsapp">WhatsApp</a>
 <button id="ai-btn" onclick="toggleAI()">AI</button>
 
 <div id="ai-box">
@@ -330,26 +332,36 @@ function selectNetwork(network){
 }
 
 // Pay
-function pay(){
-  const bundleSelect=document.getElementById("bundle-select");
-  const amount=bundleSelect.value*100;
-  if(!amount){alert("Select bundle first");return;}
-  let handler=PaystackPop.setup({
-    key:'pk_test_8f766e087751fca611df11cfe5ae5c86ece075ee',
-    email:currentUser.email,
-    amount:amount,
-    currency:'GHS',
-     callback:function(response){
-  const phone = document.getElementById("phone").value;
-const bundle = document.getElementById("bundle-select").selectedOptions[0].text;
-const user = auth.currentUser ? auth.currentUser.email : "Guest";
+function pay() {
+  const bundleSelect = document.getElementById("bundle-select");
+  const amount = bundleSelect.value * 100;
+  if (!amount) { alert("Select bundle first"); return; }
 
-emailjs.send("service_qysm6gp","template_grtoand",{
-  phone: phone,
-  bundle: bundle,
-  reference: response.reference,
-  user: user
+  let handler = PaystackPop.setup({
+    key: 'pk_test_8f766e087751fca611df11cfe5ae5c86ece075ee',
+    email: currentUser.email,
+    amount: amount,
+    currency: 'GHS',
+    callback: function(response) {
+      const phone = document.getElementById("phone").value;
+      const bundle = document.getElementById("bundle-select").selectedOptions[0].text;
+      const user = auth.currentUser ? auth.currentUser.email : "Guest";
+
+      emailjs.send("service_qysm6gp", "template_grtoand", {
+        phone: phone,
+        bundle: bundle,
+        reference: response.reference,
+        user: user
+      });
+
+      saveOrder(response.reference);
+      alert("Payment successful! Reference: " + response.reference);
+    },
+    onClose: function() {
+      alert('Payment was not completed.');
+    }
   });
+
   handler.openIframe();
 }
 
@@ -445,5 +457,6 @@ function sendAIMessage(){
   },800);
 }
 </script>
+
 </body>
 </html>
