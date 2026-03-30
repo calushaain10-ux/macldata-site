@@ -16,6 +16,7 @@ button:hover{opacity:0.9;}
 .card{ padding:20px; border-radius:15px; cursor:pointer; transition:0.3s; font-weight:bold; text-align:center;}
 .mtn{background:#FFD700;color:black;}
 .vodafone{background:#E60000;color:white;}
+.airteltigo{background:#FF6F00;color:white;}
 .card:hover{transform:scale(1.05);}
 .section{display:none;margin-top:20px;text-align:center;}
 .policy-box{ margin-top:30px; padding:15px; font-size:13px; background:rgba(255,255,255,0.1); border-radius:10px; text-align:left;}
@@ -46,7 +47,7 @@ footer{ margin-top:40px; padding:20px; background:black; font-size:14px; text-al
 
 <div class="container">
 <h1>Michael Data Hub</h1>
-<p>Affordable MTN & Vodafone Data Bundles in Ghana</p>
+<p>Affordable MTN, Vodafone & AirtelTigo Data Bundles in Ghana</p>
 
 <!-- AUTH -->
 <div id="auth-section" class="section" style="display:block;">
@@ -63,6 +64,7 @@ footer{ margin-top:40px; padding:20px; background:black; font-size:14px; text-al
   <div class="card-container" id="network-section">
     <div class="card mtn" onclick="selectNetwork('MTN')">MTN Bundles</div>
     <div class="card vodafone" onclick="selectNetwork('VODAFONE')">Vodafone Bundles</div>
+    <div class="card airteltigo" onclick="selectNetwork('AIRTELTIGO')">AirtelTigo Bundles</div>
   </div>
   <div id="bundle-section" style="display:none">
     <h3 id="network-title"></h3>
@@ -145,15 +147,24 @@ let currentUser = null;
 let selectedNetwork = "";
 const adminEmail = "admin@michaeldatahub.com";
 
+// ================= BUNDLES =================
 const mtnBundles = [
   {size:"1GB",price:5.30},{size:"2GB",price:10.20},{size:"3GB",price:14.20},
   {size:"4GB",price:18.30},{size:"5GB",price:23.00},{size:"6GB",price:27.30},
   {size:"8GB",price:37.00},{size:"10GB",price:45.00},{size:"15GB",price:65.00},
   {size:"20GB",price:84.00},{size:"30GB",price:123.00}
 ];
+
 const vodafoneBundles = [
   {size:"5GB",price:23.50},{size:"10GB",price:45.00},{size:"15GB",price:57.00},
   {size:"20GB",price:72.00},{size:"30GB",price:105.00},{size:"40GB",price:138.00}
+];
+
+const airteltigoBundles = [
+  {size:"1GB",price:4.80},{size:"2GB",price:9.50},{size:"3GB",price:13.80},
+  {size:"4GB",price:18.00},{size:"5GB",price:22.50},{size:"6GB",price:27.00},
+  {size:"7GB",price:31.50},{size:"8GB",price:36.00},{size:"10GB",price:45.00},
+  {size:"12GB",price:54.00}
 ];
 
 // ================= AUTH =================
@@ -199,7 +210,12 @@ function selectNetwork(network){
   document.getElementById("network-title").innerText=network+" Bundles";
   const select=document.getElementById("bundle-select");
   select.innerHTML='<option disabled selected>Select bundle option</option>';
-  const bundles=network==="MTN"?mtnBundles:vodafoneBundles;
+  
+  let bundles = [];
+  if(network==="MTN") bundles = mtnBundles;
+  else if(network==="VODAFONE") bundles = vodafoneBundles;
+  else if(network==="AIRTELTIGO") bundles = airteltigoBundles;
+  
   bundles.forEach(b=>{
     const option=document.createElement("option");
     option.value=b.price;
@@ -341,13 +357,13 @@ function sendAIMessage(){
     let reply="AI: I'm not sure about that. Please contact <a href='mailto:Mac.calusha10@gmail.com' style='color:#10b981;'>Mac.calusha10@gmail.com</a>";
     if(msg.toLowerCase().includes("mtn")) reply="AI: You selected MTN, choose your bundle from the dashboard.";
     else if(msg.toLowerCase().includes("vodafone")) reply="AI: You selected Vodafone, choose your bundle from the dashboard.";
-    else if(msg.toLowerCase().includes("price")) reply="AI: Prices are shown next to each bundle in the dropdown.";
-    else if(msg.toLowerCase().includes("pay")) reply="AI: Click the 'Pay Now' button to proceed.";
-    else if(msg.toLowerCase().includes("order")) reply="AI: View orders from the menu -> My Orders.";
-    aiMsg.innerHTML=reply; messages.appendChild(aiMsg);
+    else if(msg.toLowerCase().includes("airteltigo")) reply="AI: You selected AirtelTigo, choose your bundle from the dashboard.";
+    aiMsg.innerHTML=reply;
+    messages.appendChild(aiMsg);
     messages.scrollTop=messages.scrollHeight;
-  },800);
+  },500);
 }
 </script>
+
 </body>
 </html>
