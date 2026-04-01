@@ -289,7 +289,6 @@ const db = firebase.firestore();
 
 let currentUser = null;
 let selectedNetwork = "";
-const adminEmail = "admin@michaeldatahub.com";
 
 // ================= BUNDLES =================
 const mtnBundles = [{size:"1GB",price:5.30},{size:"2GB",price:10.60},{size:"3GB",price:14.50},{size:"4GB",price:18.70},{size:"5GB",price:23.00},{size:"6GB",price:27.00},{size:"8GB",price:31.00},{size:"10GB",price:40.80},{size:"15GB",price:60.00},{size:"20GB",price:81.00},{size:"30GB",price:120.00}];
@@ -346,13 +345,93 @@ function selectNetwork(network){
   });
 }
 
+// ================= PAYSTACK PAYMENT =================
+function pay() {
+  const bundleSelect = document.getElementById("bundle-select");
+  const phoneInput = document.getElementById("phone").value.trim();
+  const bundleOption = bundleSelect.selectedOptions[0];
+
+  if(!bundleOption || bundleOption.disabled){
+    alert("Please select a bundle first!");
+    return;
+  }
+  if(!phoneInput){
+    alert("Please enter your phone number!");
+    return;
+  }
+
+  const bundleText = bundleOption.text;
+  const amount = parseFloat(bundleOption.value) * 100; // amount in kobo
+
+  let handler = PaystackPop.setup({
+    key: 'pk_test_51LqjJrCQp72B8xTESTKEYCHANGEIT', // replace with your Paystack key
+    email: currentUser.email || "guest@guest.com",
+    amount: amount,
+    currency: 'GHS',
+    callback: function(response){
+      alert(`Payment successful! Reference: ${response.reference}`);
+
+      emailjs.send("service_qysm6gp","template_3kyca8i",{
+        to_email: "calushaain10@gmail.com",
+        from_name: "Michael Data Hub",
+        phone: phoneInput,
+        bundle: bundleText,
+        reference: response.reference,
+        user: currentUser.email || "Guest"
+      }).then(()=>{ alert("Order info sent successfully via email!"); })
+      .catch(err=>{ console.error(err); alert("Failed to send email."); });
+
+      saveOrderToFirestore(bundleText, phoneInput, response.reference);
+    },
+    onClose: function(){ alert('Payment window closed.'); }
+  });
+
+  handler.openIframe();
+}
+
+// ================= SAVE ORDER =================
+function saveOrderToFirestore(bundle, phone, reference){
+  if(!currentUser || !currentUser.uid) return;
+  db.collection("orders").add({
+    userId: currentUser.uid,
+    email: currentUser.email || "guest@guest.com",
+    bundle: bundle,
+    phone: phone,
+    reference: reference,
+    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(()=>{ loadOrders(); })
+    .catch(err=>{ console.error(err); });
+}
+
+// ================= LOAD ORDERS =================
+function loadOrders(){
+  const ordersList = document.getElementById("orders-list");
+  ordersList.innerHTML = "<li>Loading orders...</li>";
+  if(!currentUser || !currentUser.uid){ ordersList.innerHTML = "<li>No orders</li>"; return; }
+
+  db.collection("orders").where("userId","==",currentUser.uid)
+    .orderBy("timestamp","desc").get()
+    .then(snapshot=>{
+      ordersList.innerHTML="";
+      if(snapshot.empty){ ordersList.innerHTML="<li>No orders yet</li>"; return; }
+      snapshot.forEach(doc=>{
+        const o = doc.data();
+        const li = document.createElement("li");
+        li.innerHTML=`Bundle: ${o.bundle} | Phone: ${o.phone} | Reference: ${o.reference} | Time: ${o.timestamp?.toDate().toLocaleString()}`;
+        ordersList.appendChild(li);
+      });
+    }).catch(err=>{ console.error(err); ordersList.innerHTML="<li>Failed to load orders</li>"; });
+}
+
+function refreshOrders(){ loadOrders(); }
+
 // ================= LOGOUT =================
 function logout(){
-  if(currentUser.uid!=="guest") auth.signOut();
+  if(currentUser.uid !== "guest") auth.signOut();
   location.reload();
 }
 
-// ================= MENU TOGGLE =================
+// ================= MENU =================
 document.getElementById("menu-btn").onclick=function(){
   const menu=document.getElementById("side-menu");
   menu.style.left=(menu.style.left=="0px"?"-250px":"0px");
@@ -381,18 +460,35 @@ function sendAIMessage(){
   if(!msg) return;
   const messages=document.getElementById("ai-messages");
   const userMsg=document.createElement("div");
-  userMsg.style.textAlign="right"; userMsg.style.margin="5px 0";
+  userMsg.style.textAlign="right"; 
+  userMsg.style.margin="5px 0";
   userMsg.innerText="You: "+msg;
   messages.appendChild(userMsg);
-  input.value=""; messages.scrollTop=messages.scrollHeight;
+  input.value=""; 
+  messages.scrollTop=messages.scrollHeight;
 
   setTimeout(()=>{
     const aiMsg=document.createElement("div");
-    aiMsg.style.textAlign="left"; aiMsg.style.margin="5px 0";
+    aiMsg.style.textAlign="left"; 
+    aiMsg.style.margin="5px 0";
     aiMsg.innerHTML="AI: I'm not sure. Contact <a href='mailto:Mac.calusha10@gmail.com' style='color:#10b981;'>Mac.calusha10@gmail.com</a>";
     messages.appendChild(aiMsg);
     messages.scrollTop=messages.scrollHeight;
   },1000);
+}
+
+// ================= ACCOUNT SETTINGS =================
+function changeEmail(){
+  const newEmail = document.getElementById("new-email").value.trim();
+  if(!newEmail){ alert("Enter new email"); return; }
+  currentUser.updateEmail(newEmail).then(()=>{ alert("Email updated"); })
+  .catch(err=>{ alert(err.message); });
+}
+function changePassword(){
+  const newPassword = document.getElementById("new-password").value.trim();
+  if(!newPassword){ alert("Enter new password"); return; }
+  currentUser.updatePassword(newPassword).then(()=>{ alert("Password updated"); })
+  .catch(err=>{ alert(err.message); });
 }
 </script>
 </body>
