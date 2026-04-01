@@ -19,10 +19,7 @@ body {
   text-align:center;
   position:relative;
 }
-/* ================= HEADINGS ================= */
 h1,h3{margin:10px 0;}
-
-/* ================= INPUTS & BUTTONS ================= */
 input, select, button{
   padding:10px;
   margin:5px 0;
@@ -43,8 +40,6 @@ button:hover{opacity:0.9;}
   color:white;
   font-weight:300;
 }
-
-/* ================= NETWORK CARDS ================= */
 .card-container{
   display:flex;
   justify-content:center;
@@ -63,8 +58,6 @@ button:hover{opacity:0.9;}
 .vodafone{background:#E60000;color:white;}
 .airtel{background:#FF6600;color:white;}
 .card:hover{transform:scale(1.05);}
-
-/* ================= SECTIONS ================= */
 .section{display:none;margin-top:20px;text-align:center;}
 .policy-box{
   margin-top:30px;
@@ -81,8 +74,6 @@ footer{
   font-size:14px;
   text-align:center;
 }
-
-/* ================= FIXED BUTTONS ================= */
 #whatsapp{
   position:fixed;
   bottom:15px;
@@ -125,8 +116,6 @@ footer{
   transition:0.3s;
 }
 #side-menu a:hover{background:#333;}
-
-/* ================= AI CHAT BOX ================= */
 #ai-btn{
   position:fixed;
   bottom:70px;
@@ -177,7 +166,6 @@ footer{
 </head>
 <body>
 
-<!-- ================= SIDE MENU ================= -->
 <div id="menu-btn">&#9776;</div>
 <div id="side-menu">
   <a href="#" onclick="openSection('dashboard-interface')">Home</a>
@@ -186,12 +174,10 @@ footer{
   <a href="#" onclick="logout()">Logout</a>
 </div>
 
-<!-- ================= MAIN CONTAINER ================= -->
 <div class="container">
 <h1>Michael Data Hub</h1>
 <p>Affordable MTN, Vodafone & Airtel/Tigo Data Bundles in Ghana</p>
 
-<!-- ================= AUTH SECTION ================= -->
 <div id="auth-section" class="section" style="display:block;">
   <input type="email" id="email" placeholder="Enter Email">
   <input type="password" id="password" placeholder="Enter Password">
@@ -201,7 +187,6 @@ footer{
   <p id="auth-msg"></p>
 </div>
 
-<!-- ================= DASHBOARD ================= -->
 <div id="dashboard-interface" class="section">
   <div class="card-container" id="network-section">
     <div class="card mtn" onclick="selectNetwork('MTN')">MTN Bundles</div>
@@ -221,11 +206,10 @@ footer{
   <div id="dashboard-section" style="margin-top:20px;">
     <h3>My Orders</h3>
     <ul id="orders-list"></ul>
-    <button onclick="refreshOrders()">Refresh Orders</button>
+    <button onclick="loadOrders()">Refresh Orders</button>
   </div>
 </div>
 
-<!-- ================= ACCOUNT SETTINGS ================= -->
 <div class="section" id="account-section">
 <h3>Account Settings</h3>
 <input type="email" id="new-email" placeholder="New Email">
@@ -234,7 +218,6 @@ footer{
 <button onclick="changePassword()">Change Password</button>
 </div>
 
-<!-- ================= TERMS & POLICY ================= -->
 <div class="policy-box">
 <h3>Terms & Refund Policy</h3>
 <p>• All payments are processed securely via Paystack (Test Mode)</p>
@@ -242,10 +225,8 @@ footer{
 <p>• No refund after successful delivery</p>
 <p>• Ensure the phone number entered is correct before payment</p>
 </div>
-
 </div>
 
-<!-- ================= FOOTER ================= -->
 <footer>
 <p><strong>Michael Data Hub</strong></p>
 <p>Contact: 0536576713</p>
@@ -253,10 +234,8 @@ footer{
 <p>Location: Accra, Ghana</p>
 </footer>
 
-<!-- ================= WHATSAPP & AI BUTTON ================= -->
 <a href="#" target="_blank" id="whatsapp">WhatsApp</a>
 <button id="ai-btn" onclick="toggleAI()">AI</button>
-
 <div id="ai-box">
   <div id="ai-messages"></div>
   <div id="ai-input">
@@ -265,7 +244,6 @@ footer{
   </div>
 </div>
 
-<!-- ================= SCRIPTS ================= -->
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 <script>emailjs.init("9pOwIprzcpJ4p7znn");</script>
 <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -274,14 +252,14 @@ footer{
 <script src="https://js.paystack.co/v1/inline.js"></script>
 
 <script>
-// ================= FIREBASE CONFIG =================
+// ================= FIREBASE =================
 const firebaseConfig = {
   apiKey: "AIzaSyArIt3zEQuqTfhy908istAqE8eDsRd1AUg",
   authDomain: "michael-data-hub.firebaseapp.com",
   projectId: "michael-data-hub",
   storageBucket: "michael-data-hub.firebasestorage.app",
   messagingSenderId: "759312152318",
-  appId: "1:759312152318:web:1a8aa421fe3c0de5e217af",
+  appId: "1:759312152318:web:1a8aa421fe3c0de5e217af"
 };
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
@@ -295,27 +273,25 @@ const mtnBundles = [{size:"1GB",price:5.30},{size:"2GB",price:10.60},{size:"3GB"
 const vodafoneBundles = [{size:"5GB",price:23.50},{size:"10GB",price:45.00},{size:"15GB",price:57.00},{size:"20GB",price:72.00},{size:"30GB",price:105.00},{size:"40GB",price:138.00}];
 const airtelBundles = [{size:"1GB",price:4.80},{size:"2GB",price:9.50},{size:"3GB",price:14.00},{size:"4GB",price:18.50},{size:"5GB",price:23.00},{size:"6GB",price:27.50},{size:"7GB",price:32.00},{size:"8GB",price:36.50},{size:"9GB",price:41.00},{size:"10GB",price:45.50},{size:"11GB",price:50.00},{size:"12GB",price:54.50}];
 
-// ================= AUTH BUTTON HANDLERS =================
+// ================= AUTH =================
 document.getElementById("signup-btn").addEventListener("click", () => {
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
-  if(!email || !password){ document.getElementById("auth-msg").innerText="Enter email & password"; return; }
+  const email=document.getElementById("email").value.trim();
+  const password=document.getElementById("password").value.trim();
+  if(!email||!password){document.getElementById("auth-msg").innerText="Enter email & password";return;}
   auth.createUserWithEmailAndPassword(email,password)
-    .then(user=>{ currentUser=user.user; showDashboard(); })
-    .catch(err=>{ document.getElementById("auth-msg").innerText=err.message; });
+  .then(user=>{currentUser=user.user;showDashboard();})
+  .catch(err=>{document.getElementById("auth-msg").innerText=err.message;});
 });
-
 document.getElementById("login-btn").addEventListener("click", () => {
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
-  if(!email || !password){ document.getElementById("auth-msg").innerText="Enter email & password"; return; }
+  const email=document.getElementById("email").value.trim();
+  const password=document.getElementById("password").value.trim();
+  if(!email||!password){document.getElementById("auth-msg").innerText="Enter email & password";return;}
   auth.signInWithEmailAndPassword(email,password)
-    .then(user=>{ currentUser=user.user; showDashboard(); })
-    .catch(err=>{ document.getElementById("auth-msg").innerText=err.message; });
+  .then(user=>{currentUser=user.user;showDashboard();})
+  .catch(err=>{document.getElementById("auth-msg").innerText=err.message;});
 });
-
-document.getElementById("guest-btn").addEventListener("click", () => {
-  currentUser = {uid:"guest", email:"guest@guest.com"};
+document.getElementById("guest-btn").addEventListener("click", ()=>{
+  currentUser={uid:"guest",email:"guest@guest.com"};
   showDashboard();
 });
 
@@ -328,7 +304,7 @@ function showDashboard(){
 }
 
 function selectNetwork(network){
-  selectedNetwork = network;
+  selectedNetwork=network;
   document.getElementById("bundle-section").style.display="block";
   document.getElementById("network-title").innerText=network+" Bundles";
   const select=document.getElementById("bundle-select");
@@ -346,101 +322,61 @@ function selectNetwork(network){
 }
 
 // ================= PAYSTACK PAYMENT =================
-function pay() {
-  const bundleSelect = document.getElementById("bundle-select");
-  const phoneInput = document.getElementById("phone").value.trim();
-  const bundleOption = bundleSelect.selectedOptions[0];
-
-  if(!bundleOption || bundleOption.disabled){
-    alert("Please select a bundle first!");
-    return;
-  }
-  if(!phoneInput){
-    alert("Please enter your phone number!");
-    return;
-  }
-
-  const bundleText = bundleOption.text;
-  const amount = parseFloat(bundleOption.value) * 100; // amount in kobo
-
-  let handler = PaystackPop.setup({
-    key: 'pk_test_51LqjJrCQp72B8xTESTKEYCHANGEIT', // replace with your Paystack key
-    email: currentUser.email || "guest@guest.com",
-    amount: amount,
-    currency: 'GHS',
-    callback: function(response){
-      alert(`Payment successful! Reference: ${response.reference}`);
-
-      emailjs.send("service_qysm6gp","template_3kyca8i",{
-        to_email: "calushaain10@gmail.com",
-        from_name: "Michael Data Hub",
-        phone: phoneInput,
-        bundle: bundleText,
-        reference: response.reference,
-        user: currentUser.email || "Guest"
-      }).then(()=>{ alert("Order info sent successfully via email!"); })
-      .catch(err=>{ console.error(err); alert("Failed to send email."); });
-
-      saveOrderToFirestore(bundleText, phoneInput, response.reference);
+function pay(){
+  const bundleSelect=document.getElementById("bundle-select");
+  const phone=document.getElementById("phone").value.trim();
+  if(!bundleSelect.value){alert("Select bundle first");return;}
+  if(!phone){alert("Enter phone number");return;}
+  const bundleText=bundleSelect.options[bundleSelect.selectedIndex].text;
+  const amount=Math.round(parseFloat(bundleSelect.value)*100); // kobo
+  const email=(currentUser && currentUser.email)?currentUser.email:"guest@guest.com";
+  let handler=PaystackPop.setup({
+    key:'YOUR_PAYSTACK_PUBLIC_KEY', // <-- replace with your key
+    email:email,
+    amount:amount,
+    currency:'GHS',
+    ref:'MDH_'+Math.floor(Math.random()*1000000000+1),
+    metadata:{custom_fields:[{display_name:"Phone",variable_name:"phone",value:phone},{display_name:"Bundle",variable_name:"bundle",value:bundleText}]},
+    callback:function(resp){
+      alert("Payment successful! Ref: "+resp.reference);
+      emailjs.send("service_qysm6gp","template_3kyca8i",{to_email:"calushaain10@gmail.com",from_name:"Michael Data Hub",phone:phone,bundle:bundleText,reference:resp.reference,user:email})
+      .then(()=>alert("Order info sent successfully!"))
+      .catch(err=>{console.error(err);alert("Failed to send order info");});
+      if(currentUser){
+        db.collection("orders").add({user:email,bundle:bundleText,phone:phone,reference:resp.reference,network:selectedNetwork,timestamp:firebase.firestore.FieldValue.serverTimestamp()});
+      }
+      loadOrders();
     },
-    onClose: function(){ alert('Payment window closed.'); }
+    onClose:function(){alert("Payment window closed");}
   });
-
   handler.openIframe();
-}
-
-// ================= SAVE ORDER =================
-function saveOrderToFirestore(bundle, phone, reference){
-  if(!currentUser || !currentUser.uid) return;
-  db.collection("orders").add({
-    userId: currentUser.uid,
-    email: currentUser.email || "guest@guest.com",
-    bundle: bundle,
-    phone: phone,
-    reference: reference,
-    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-  }).then(()=>{ loadOrders(); })
-    .catch(err=>{ console.error(err); });
 }
 
 // ================= LOAD ORDERS =================
 function loadOrders(){
-  const ordersList = document.getElementById("orders-list");
-  ordersList.innerHTML = "<li>Loading orders...</li>";
-  if(!currentUser || !currentUser.uid){ ordersList.innerHTML = "<li>No orders</li>"; return; }
-
-  db.collection("orders").where("userId","==",currentUser.uid)
-    .orderBy("timestamp","desc").get()
+  const list=document.getElementById("orders-list");
+  list.innerHTML="";
+  if(currentUser){
+    db.collection("orders").where("user","==",(currentUser.email||"guest@guest.com")).orderBy("timestamp","desc").get()
     .then(snapshot=>{
-      ordersList.innerHTML="";
-      if(snapshot.empty){ ordersList.innerHTML="<li>No orders yet</li>"; return; }
       snapshot.forEach(doc=>{
-        const o = doc.data();
-        const li = document.createElement("li");
-        li.innerHTML=`Bundle: ${o.bundle} | Phone: ${o.phone} | Reference: ${o.reference} | Time: ${o.timestamp?.toDate().toLocaleString()}`;
-        ordersList.appendChild(li);
+        const li=document.createElement("li");
+        li.innerText=`${doc.data().network} | ${doc.data().bundle} | ${doc.data().phone} | Ref: ${doc.data().reference}`;
+        list.appendChild(li);
       });
-    }).catch(err=>{ console.error(err); ordersList.innerHTML="<li>Failed to load orders</li>"; });
+    });
+  }
 }
-
-function refreshOrders(){ loadOrders(); }
 
 // ================= LOGOUT =================
-function logout(){
-  if(currentUser.uid !== "guest") auth.signOut();
-  location.reload();
-}
+function logout(){if(currentUser.uid!=="guest") auth.signOut(); location.reload();}
 
 // ================= MENU =================
 document.getElementById("menu-btn").onclick=function(){
   const menu=document.getElementById("side-menu");
-  menu.style.left=(menu.style.left=="0px"?"-250px":"0px");
+  menu.style.left=(menu.style.left=="0px"? "-250px":"0px");
 }
-function openSection(id){
-  document.querySelectorAll(".section").forEach(s=>s.style.display="none");
-  document.getElementById(id).style.display="block";
-  document.getElementById("side-menu").style.left="-250px";
-}
+function openSection(id){document.querySelectorAll(".section").forEach(s=>s.style.display="none");document.getElementById(id).style.display="block";document.getElementById("side-menu").style.left="-250px";}
 
 // ================= AI CHAT =================
 function toggleAI(){
@@ -455,40 +391,11 @@ function toggleAI(){
   }
 }
 function sendAIMessage(){
-  const input=document.getElementById("ai-text");
-  const msg=input.value.trim();
-  if(!msg) return;
+  const input=document.getElementById("ai-text"); const msg=input.value.trim(); if(!msg)return;
   const messages=document.getElementById("ai-messages");
-  const userMsg=document.createElement("div");
-  userMsg.style.textAlign="right"; 
-  userMsg.style.margin="5px 0";
-  userMsg.innerText="You: "+msg;
-  messages.appendChild(userMsg);
-  input.value=""; 
-  messages.scrollTop=messages.scrollHeight;
-
-  setTimeout(()=>{
-    const aiMsg=document.createElement("div");
-    aiMsg.style.textAlign="left"; 
-    aiMsg.style.margin="5px 0";
-    aiMsg.innerHTML="AI: I'm not sure. Contact <a href='mailto:Mac.calusha10@gmail.com' style='color:#10b981;'>Mac.calusha10@gmail.com</a>";
-    messages.appendChild(aiMsg);
-    messages.scrollTop=messages.scrollHeight;
-  },1000);
-}
-
-// ================= ACCOUNT SETTINGS =================
-function changeEmail(){
-  const newEmail = document.getElementById("new-email").value.trim();
-  if(!newEmail){ alert("Enter new email"); return; }
-  currentUser.updateEmail(newEmail).then(()=>{ alert("Email updated"); })
-  .catch(err=>{ alert(err.message); });
-}
-function changePassword(){
-  const newPassword = document.getElementById("new-password").value.trim();
-  if(!newPassword){ alert("Enter new password"); return; }
-  currentUser.updatePassword(newPassword).then(()=>{ alert("Password updated"); })
-  .catch(err=>{ alert(err.message); });
+  const userMsg=document.createElement("div"); userMsg.style.textAlign="right"; userMsg.style.margin="5px 0"; userMsg.innerText="You: "+msg;
+  messages.appendChild(userMsg); input.value=""; messages.scrollTop=messages.scrollHeight;
+  setTimeout(()=>{const aiMsg=document.createElement("div"); aiMsg.style.textAlign="left"; aiMsg.style.margin="5px 0"; aiMsg.innerHTML="AI: I'm not sure. Contact <a href='mailto:Mac.calusha10@gmail.com' style='color:#10b981;'>Mac.calusha10@gmail.com</a>"; messages.appendChild(aiMsg); messages.scrollTop=messages.scrollHeight;},1000);
 }
 </script>
 </body>
