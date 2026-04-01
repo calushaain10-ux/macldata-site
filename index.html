@@ -195,9 +195,9 @@ footer{
 <div id="auth-section" class="section" style="display:block;">
   <input type="email" id="email" placeholder="Enter Email">
   <input type="password" id="password" placeholder="Enter Password">
-  <button onclick="signup()">Sign Up</button>
-  <button onclick="login()">Login</button>
-  <button onclick="continueGuest()">Continue as Guest</button>
+  <button id="signup-btn">Sign Up</button>
+  <button id="login-btn">Login</button>
+  <button id="guest-btn">Continue as Guest</button>
   <p id="auth-msg"></p>
 </div>
 
@@ -254,7 +254,7 @@ footer{
 </footer>
 
 <!-- ================= WHATSAPP & AI BUTTON ================= -->
-<a href="https://chat.whatsapp.com/Es5C5AvDdBMLctjT0hBgwR" target="_blank" id="whatsapp">WhatsApp</a>
+<a href="#" target="_blank" id="whatsapp">WhatsApp</a>
 <button id="ai-btn" onclick="toggleAI()">AI</button>
 
 <div id="ai-box">
@@ -282,7 +282,6 @@ const firebaseConfig = {
   storageBucket: "michael-data-hub.firebasestorage.app",
   messagingSenderId: "759312152318",
   appId: "1:759312152318:web:1a8aa421fe3c0de5e217af",
-  measurementId: "G-F9WGWMYVHD"
 };
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
@@ -293,77 +292,67 @@ let selectedNetwork = "";
 const adminEmail = "admin@michaeldatahub.com";
 
 // ================= BUNDLES =================
-const mtnBundles = [
-  {size:"1GB",price:5.30},{size:"2GB",price:10.60},{size:"3GB",price:14.50},
-  {size:"4GB",price:18.70},{size:"5GB",price:23.00},{size:"6GB",price:27.00},
-  {size:"8GB",price:31.00},{size:"10GB",price:40.80},{size:"15GB",price:60.00},
-  {size:"20GB",price:81.00},{size:"30GB",price:120.00}
-];
+const mtnBundles = [{size:"1GB",price:5.30},{size:"2GB",price:10.60},{size:"3GB",price:14.50},{size:"4GB",price:18.70},{size:"5GB",price:23.00},{size:"6GB",price:27.00},{size:"8GB",price:31.00},{size:"10GB",price:40.80},{size:"15GB",price:60.00},{size:"20GB",price:81.00},{size:"30GB",price:120.00}];
+const vodafoneBundles = [{size:"5GB",price:23.50},{size:"10GB",price:45.00},{size:"15GB",price:57.00},{size:"20GB",price:72.00},{size:"30GB",price:105.00},{size:"40GB",price:138.00}];
+const airtelBundles = [{size:"1GB",price:4.80},{size:"2GB",price:9.50},{size:"3GB",price:14.00},{size:"4GB",price:18.50},{size:"5GB",price:23.00},{size:"6GB",price:27.50},{size:"7GB",price:32.00},{size:"8GB",price:36.50},{size:"9GB",price:41.00},{size:"10GB",price:45.50},{size:"11GB",price:50.00},{size:"12GB",price:54.50}];
 
-const vodafoneBundles = [
-  {size:"5GB",price:23.50},{size:"10GB",price:45.00},{size:"15GB",price:57.00},
-  {size:"20GB",price:72.00},{size:"30GB",price:105.00},{size:"40GB",price:138.00}
-];
+// ================= AUTH BUTTON HANDLERS =================
+document.getElementById("signup-btn").addEventListener("click", () => {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  if(!email || !password){ document.getElementById("auth-msg").innerText="Enter email & password"; return; }
+  auth.createUserWithEmailAndPassword(email,password)
+    .then(user=>{ currentUser=user.user; showDashboard(); })
+    .catch(err=>{ document.getElementById("auth-msg").innerText=err.message; });
+});
 
-const airtelBundles = [
-  {size:"1GB",price:4.80},{size:"2GB",price:9.50},{size:"3GB",price:14.00},
-  {size:"4GB",price:18.50},{size:"5GB",price:23.00},{size:"6GB",price:27.50},
-  {size:"7GB",price:32.00},{size:"8GB",price:36.50},{size:"9GB",price:41.00},
-  {size:"10GB",price:45.50},{size:"11GB",price:50.00},{size:"12GB",price:54.50}
-];
+document.getElementById("login-btn").addEventListener("click", () => {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  if(!email || !password){ document.getElementById("auth-msg").innerText="Enter email & password"; return; }
+  auth.signInWithEmailAndPassword(email,password)
+    .then(user=>{ currentUser=user.user; showDashboard(); })
+    .catch(err=>{ document.getElementById("auth-msg").innerText=err.message; });
+});
 
-// ================= AUTH FUNCTIONS =================
-function signup(){ /* ... full signup logic ... */ }
-function login(){ /* ... full login logic ... */ }
-function continueGuest(){ /* ... guest logic ... */ }
-function logout(){ auth.signOut(); location.reload(); }
+document.getElementById("guest-btn").addEventListener("click", () => {
+  currentUser = {uid:"guest", email:"guest@guest.com"};
+  showDashboard();
+});
 
 // ================= DASHBOARD =================
-function showApp(){ /* ... display dashboard logic ... */ }
-function selectNetwork(network){ /* ... populate bundles logic ... */ }
-
-// ================= PAYSTACK PAYMENT =================
-function pay() {
-  const bundleSelect=document.getElementById("bundle-select");
-  const phoneInput=document.getElementById("phone").value.trim();
-  const bundleText=bundleSelect.selectedOptions[0]?.text;
-  const amount=bundleSelect.value*100;
-  if(!bundleSelect.value){ alert("Select bundle first"); return; }
-  if(!phoneInput){ alert("Enter phone number"); return; }
-
-  let handler=PaystackPop.setup({
-    key:'pk_test_51LqjJrCQp72B8xTESTKEYCHANGEIT',
-    email:currentUser.email || "guest@guest.com",
-    amount:amount,
-    currency:'GHS',
-    callback:function(response){
-      emailjs.send("service_qysm6gp","template_3kyca8i",{
-        to_email:"calushaain10@gmail.com",
-        from_name:"Michael Data Hub",
-        phone:phoneInput,
-        bundle:bundleText,
-        reference:response.reference,
-        user:currentUser.email || "Guest"
-      }).then(()=>alert("Order information sent successfully!"))
-      .catch(err=>{console.error("Email failed:", err); alert("Failed to send order info.");});
-
-      saveOrder(response.reference);
-    },
-    onClose:function(){ alert('Payment window closed.'); }
-  });
-  handler.openIframe();
+function showDashboard(){
+  document.getElementById("auth-section").style.display="none";
+  document.getElementById("dashboard-interface").style.display="block";
+  document.getElementById("menu-btn").style.display="block";
+  loadOrders();
 }
 
-// ================= ORDERS =================
-function saveOrder(ref){ /* ... save order to Firestore ... */ }
-function loadOrders(){ /* ... load orders logic ... */ }
-function refreshOrders(){ loadOrders(); }
+function selectNetwork(network){
+  selectedNetwork = network;
+  document.getElementById("bundle-section").style.display="block";
+  document.getElementById("network-title").innerText=network+" Bundles";
+  const select=document.getElementById("bundle-select");
+  select.innerHTML='<option disabled selected>Select bundle option</option>';
+  let bundles=[];
+  if(network==="MTN") bundles=mtnBundles;
+  else if(network==="VODAFONE") bundles=vodafoneBundles;
+  else bundles=airtelBundles;
+  bundles.forEach(b=>{
+    const opt=document.createElement("option");
+    opt.value=b.price;
+    opt.text=b.size+" - GHC "+b.price.toFixed(2);
+    select.appendChild(opt);
+  });
+}
 
-// ================= ACCOUNT =================
-function changeEmail(){ /* ... update email logic ... */ }
-function changePassword(){ /* ... update password logic ... */ }
+// ================= LOGOUT =================
+function logout(){
+  if(currentUser.uid!=="guest") auth.signOut();
+  location.reload();
+}
 
-// ================= MENU =================
+// ================= MENU TOGGLE =================
 document.getElementById("menu-btn").onclick=function(){
   const menu=document.getElementById("side-menu");
   menu.style.left=(menu.style.left=="0px"?"-250px":"0px");
@@ -400,7 +389,7 @@ function sendAIMessage(){
   setTimeout(()=>{
     const aiMsg=document.createElement("div");
     aiMsg.style.textAlign="left"; aiMsg.style.margin="5px 0";
-    aiMsg.innerHTML="AI: I'm not sure about that. Please contact <a href='mailto:Mac.calusha10@gmail.com' style='color:#10b981;'>Mac.calusha10@gmail.com</a>";
+    aiMsg.innerHTML="AI: I'm not sure. Contact <a href='mailto:Mac.calusha10@gmail.com' style='color:#10b981;'>Mac.calusha10@gmail.com</a>";
     messages.appendChild(aiMsg);
     messages.scrollTop=messages.scrollHeight;
   },1000);
