@@ -331,7 +331,7 @@ function pay(){
   const amount=Math.round(parseFloat(bundleSelect.value)*100); // kobo
   const email=(currentUser && currentUser.email)?currentUser.email:"guest@guest.com";
   let handler=PaystackPop.setup({
-    key:'YOUR_PAYSTACK_PUBLIC_KEY', // <-- replace with your key
+    key:'pk_test_8f766e087751fca611df11cfe5ae5c86ece075ee', // <-- replace with your key
     email:email,
     amount:amount,
     currency:'GHS',
@@ -347,7 +347,7 @@ function pay(){
       }
       loadOrders();
     },
-    onClose:function(){alert("Payment window closed");}
+    onClose:function(){alert("Thank you");}
   });
   handler.openIframe();
 }
